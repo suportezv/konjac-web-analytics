@@ -37,4 +37,7 @@ Formato de cada entrada:
 - **Entrega**: `CLAUDE.md`, `FRAMEWORK.md` (v0.1 das definições de métrica e do
   painel, **aguardando aprovação**), `README.md`, `scripts/setup.sh`,
   `scripts/validate.sh`, `queries/`, `dashboards/`, `assets/brand/`.
-  Commit da sessão de abertura na branch `claude/konjac-analytics-setup-slcvfg`.
+  Commit `54b3523` na branch `claude/konjac-analytics-setup-slcvfg`:
+  https://github.com/suportezv/konjac-web-analytics/commit/54b3523
+  Sem artifact: o painel não é publicado enquanto a paleta da marca estiver
+  PENDENTE e enquanto não houver dado real para exibir.
