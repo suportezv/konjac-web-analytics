@@ -1,0 +1,19 @@
+-- Pergunta: quantos pedidos e quanta receita a loja fez por dia na janela?
+-- Fonte: ShopifyQL, dataset `sales`, pelo conector MCP (run-analytics-query)
+-- Granularidade: uma linha por dia
+-- Janela: parametrizada pelo SINCE/UNTIL abaixo; trocar na chamada, não no arquivo
+-- Fuso: fuso configurado NA LOJA (o ShopifyQL não aceita fuso na query).
+--       Confirmar em get-shop-info que é America/Sao_Paulo antes de entregar o
+--       número, e declarar o fuso na entrega.
+-- Definições: FRAMEWORK.md, "Receita bruta", "Receita líquida" e "Pedido".
+--             gross_sales inclui frete e impostos; net_sales desconta devoluções
+--             e descontos. A entrega diz qual das duas está usando.
+-- Validada: NÃO VALIDADA (conector Shopify com token expirado em 2026-08-27).
+--           Ao validar, conferir se o dataset e os nomes de campo batem com a
+--           versão de ShopifyQL da loja e atualizar esta linha no mesmo commit.
+
+FROM sales
+SHOW gross_sales, discounts, returns, net_sales, orders
+GROUP BY day
+SINCE -28d UNTIL -1d
+ORDER BY day

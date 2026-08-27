@@ -1,0 +1,51 @@
+# ============================================================
+# Credenciais: NADA disso entra no repo, em nenhuma hipótese.
+# ============================================================
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+credentials.json
+client_secret*.json
+service-account*.json
+sa-*.json
+*-credentials.json
+*-sa.json
+google-ads.yaml
+secrets/
+.secrets/
+
+# Diretório onde o setup.sh materializa a chave de service account
+# a partir da env var. Nunca versionar.
+.credentials/
+
+# ============================================================
+# Exports brutos e dados pessoais de cliente
+# ============================================================
+exports/
+data/raw/
+**/raw/
+*.csv.gz
+analyses/**/*.csv
+analyses/**/*.tsv
+analyses/**/*.parquet
+analyses/**/*.jsonl
+analyses/**/*.xlsx
+!analyses/**/agregado_*.csv
+
+# ============================================================
+# Ambiente Python / Node
+# ============================================================
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+node_modules/
+
+# ============================================================
+# Sistema
+# ============================================================
+.DS_Store
