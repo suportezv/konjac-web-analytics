@@ -26,7 +26,7 @@ existe para o resto da equipe.
 | Shopify (konjacmassamf.com.br) | Conector MCP `Shopify` | Conectado na conta, **token expirado na sessão**. Loja **não confirmada**. |
 | GA4 | Service account + `google-analytics-data` | **Sem conector MCP.** Sem credencial e sem rota de rede. |
 | Google Ads | OAuth2 refresh token + `google-ads` | **Sem conector MCP.** Sem credencial e sem rota de rede. |
-| Meta Ads | Conector MCP `Meta Ads MCP` | Instalado, **não autorizado e não habilitado neste chat**. |
+| Meta Ads | Conector MCP `Meta Ads MCP` | Instalado, **não autorizado e não habilitado neste chat** (rechecado em 2026-08-27). Sem rota alternativa: Graph API bloqueada e Konjac não existe no Metricool. |
 | BigQuery | Service account + `google-cloud-bigquery` | **Sem conector MCP.** Sem credencial e sem rota de rede. |
 
 ---
@@ -154,6 +154,13 @@ siga; se algum deixar de valer, corrija aqui e commite.
   chat**, além de autorizado.
 - **Não existe conector MCP de GA4, Google Ads ou BigQuery nesta conta.** O caminho
   é credencial de serviço pelas bibliotecas Python.
+- **O Metricool não serve de atalho para Meta Ads nesta célula.** O conector está
+  conectado e habilitado, e a API dele tem as redes `metaAds` e `facebookAds`, mas
+  `getBrandSettings` em 2026-08-27 devolveu 5 marcas da agência e **nenhuma é a
+  Konjac**; todas estão só com Instagram, nenhuma com conta de anúncios ligada.
+  Antes de tentar esse caminho de novo, confira se a Konjac virou marca no painel.
+  Não confunda o Metricool desta célula com o do estúdio de conteúdo: lá ele serve
+  para agendamento, aqui só serviria como fonte de mídia, e hoje não serve.
 - A conta tem mais de uma loja Shopify. **Sempre `get-shop-info` antes de consultar.**
 
 ### Autenticação Google
