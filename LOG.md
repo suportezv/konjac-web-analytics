@@ -33,6 +33,8 @@ Formato de cada entrada:
   concentrado no pior dos dois conjuntos dela.
 - **Entrega**: `analyses/2026-08-31-meta-ads-o-que-religar/` com achado, método,
   10 recomendações priorizadas, limitações e três recortes agregados em CSV.
+  Painel em `dashboards/2026-08-31-meta-ads-o-que-religar/painel.html`, publicado
+  como artifact: https://claude.ai/code/artifact/96991d15-a6d3-4fdf-a7ea-b9029a9b935f
   Nenhuma alteração foi executada na conta: tudo é recomendação para aprovação.
 
 ## 2026-08-27  Montagem da célula e diagnóstico de acesso

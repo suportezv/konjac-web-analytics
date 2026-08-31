@@ -1,0 +1,691 @@
+<title>O Corte de 28.08</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#E8EBE7;
+  --card:#F6F7F5;
+  --card-2:#EFF1ED;
+  --line:#D3D9D2;
+  --line-soft:#E1E6E0;
+  --ink:#141A18;
+  --ink-2:#4A5350;
+  --ink-3:#79837F;
+  --off:#00897A;        /* categórico 1: desligada */
+  --on:#D98A00;         /* categórico 2: ativa */
+  --crit:#C4342A;
+  --off-wash:rgba(0,137,122,.10);
+  --on-wash:rgba(217,138,0,.12);
+  --crit-wash:rgba(196,52,42,.10);
+  --grid:rgba(20,26,24,.09);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0E1113;
+    --card:#14181B;
+    --card-2:#191E21;
+    --line:#282F33;
+    --line-soft:#1F2528;
+    --ink:#EEF2F0;
+    --ink-2:#A3AFAA;
+    --ink-3:#6E7A75;
+    --off:#19A891;
+    --on:#C2870C;
+    --crit:#EA5545;
+    --off-wash:rgba(25,168,145,.14);
+    --on-wash:rgba(194,135,12,.16);
+    --crit-wash:rgba(234,85,69,.14);
+    --grid:rgba(238,242,240,.10);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0E1113;
+  --card:#14181B;
+  --card-2:#191E21;
+  --line:#282F33;
+  --line-soft:#1F2528;
+  --ink:#EEF2F0;
+  --ink-2:#A3AFAA;
+  --ink-3:#6E7A75;
+  --off:#19A891;
+  --on:#C2870C;
+  --crit:#EA5545;
+  --off-wash:rgba(25,168,145,.14);
+  --on-wash:rgba(194,135,12,.16);
+  --crit-wash:rgba(234,85,69,.14);
+  --grid:rgba(238,242,240,.10);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 22px 88px;display:flex;flex-direction:column;gap:34px}
+h1,h2,h3{font-family:Archivo,system-ui,sans-serif;text-wrap:balance;margin:0;letter-spacing:-.015em}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- cabeçalho ---------- */
+.masthead{display:flex;flex-direction:column;gap:18px}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;
+}
+h1{font-size:clamp(34px,6vw,58px);font-weight:800;line-height:1.02}
+.standfirst{font-size:clamp(16px,2vw,19px);color:var(--ink-2);max-width:63ch;line-height:1.55}
+.standfirst b{color:var(--ink);font-weight:600}
+
+/* ---------- cartões ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:24px}
+section{display:flex;flex-direction:column;gap:16px}
+.sec-head{display:flex;flex-direction:column;gap:5px}
+h2{font-size:clamp(21px,2.6vw,27px);font-weight:700}
+h3{font-size:16px;font-weight:600;letter-spacing:0}
+.sec-head p{margin:0;color:var(--ink-2);max-width:66ch}
+.rule{height:1px;background:var(--line);border:0;margin:0}
+
+/* ---------- placar ---------- */
+.scoreboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(172px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.tile{background:var(--card);padding:18px 18px;display:flex;flex-direction:column;gap:5px}
+.tile .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.tile .v{font-family:Archivo,sans-serif;font-size:clamp(23px,2.9vw,28px);font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1;white-space:nowrap}
+.tile .s{font-size:12.5px;color:var(--ink-3)}
+
+/* ---------- chips de estado ---------- */
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;
+  letter-spacing:.09em;text-transform:uppercase;
+  padding:3px 8px;border-radius:3px;white-space:nowrap;
+}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;flex:none}
+.chip.off{background:var(--off-wash);color:var(--off)}
+.chip.off::before{background:var(--off)}
+.chip.on{background:var(--on-wash);color:var(--on)}
+.chip.on::before{background:var(--on)}
+.chip.crit{background:var(--crit-wash);color:var(--crit)}
+.chip.crit::before{background:var(--crit)}
+
+/* ---------- tabelas ---------- */
+.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal;min-width:210px}
+thead th{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);background:var(--card-2);
+  position:sticky;top:0;
+}
+tbody tr:last-child td{border-bottom:0}
+td.n{font-variant-numeric:tabular-nums}
+td.big{font-family:Archivo,sans-serif;font-weight:700;font-size:15.5px;font-variant-numeric:tabular-nums}
+tr.hero td{background:var(--off-wash)}
+tr.warn td{background:var(--on-wash)}
+caption{caption-side:bottom;text-align:left;padding:10px 14px;font-size:12.5px;color:var(--ink-3);border-top:1px solid var(--line-soft)}
+
+/* ---------- gráficos ---------- */
+figure{margin:0;display:flex;flex-direction:column;gap:12px}
+figcaption{font-size:12.5px;color:var(--ink-3);line-height:1.5}
+.chart-title{font-family:Archivo,sans-serif;font-size:15px;font-weight:600}
+.chart-box{position:relative;width:100%}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:2px;display:inline-block;flex:none}
+.tip{
+  position:absolute;pointer-events:none;opacity:0;transition:opacity .1s;
+  background:var(--card);border:1px solid var(--line);border-radius:3px;
+  padding:8px 10px;font-size:12.5px;line-height:1.45;box-shadow:0 4px 14px rgba(0,0,0,.16);
+  z-index:5;white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.tip b{font-family:Archivo,sans-serif}
+
+/* ---------- plano de ação ---------- */
+.phase{display:flex;flex-direction:column;gap:12px}
+.phase-label{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;align-items:center;gap:10px;
+}
+.phase-label::after{content:"";flex:1;height:1px;background:var(--line)}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+ol.steps li{background:var(--card);padding:16px 20px;display:grid;grid-template-columns:32px 1fr;gap:14px;align-items:start}
+.step-n{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;color:var(--ink-3);padding-top:2px}
+.step-body{display:flex;flex-direction:column;gap:5px;min-width:0}
+.step-t{font-family:Archivo,sans-serif;font-weight:600;font-size:15.5px;line-height:1.35}
+.step-d{font-size:14px;color:var(--ink-2);line-height:1.55}
+.step-d code{font-family:"IBM Plex Mono",monospace;font-size:12px;background:var(--card-2);border:1px solid var(--line-soft);padding:1px 5px;border-radius:3px;color:var(--ink-2)}
+
+/* ---------- destaque ---------- */
+.pull{border-left:3px solid var(--off);padding:2px 0 2px 18px;display:flex;flex-direction:column;gap:8px}
+.pull p{margin:0}
+.pull .big{font-family:Archivo,sans-serif;font-size:clamp(17px,2.2vw,21px);font-weight:600;line-height:1.4;text-wrap:balance}
+.caveat{border-left:3px solid var(--on)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+footer{color:var(--ink-3);font-size:13px;display:flex;flex-direction:column;gap:8px}
+footer b{color:var(--ink-2);font-weight:600}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--off);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">
+      <span>Konjac Massa MF</span><span>·</span><span>Meta Ads · conta 3051443881648697</span>
+      <span>·</span><span>90 dias até 30.08.2026</span>
+    </div>
+    <h1>O corte de 28.08</h1>
+    <p class="standfirst">
+      A conta foi reestruturada em 28 de agosto: quase tudo foi pausado e subiu uma campanha nova.
+      <b>As duas campanhas desligadas naquele dia eram as melhores da conta</b>, rodando a ROAS 11,20 e
+      9,70 com 498 compras de evidência nos 30 dias anteriores. A que ficou no ar roda a ROAS 2,81.
+    </p>
+  </header>
+
+  <div class="scoreboard">
+    <div class="tile"><span class="k">Investimento</span><span class="v">R$ 133.065</span><span class="s">90 dias</span></div>
+    <div class="tile"><span class="k">Compras</span><span class="v">2.632</span><span class="s">atribuídas pelo Meta</span></div>
+    <div class="tile"><span class="k">ROAS de plataforma</span><span class="v">4,86</span><span class="s">média da conta</span></div>
+    <div class="tile"><span class="k">Custo por compra</span><span class="v">R$ 50,56</span><span class="s">não é CAC</span></div>
+    <div class="tile"><span class="k">Campanhas ativas</span><span class="v">1</span><span class="s">de 123 com gasto</span></div>
+  </div>
+
+  <!-- ============ 1. A TESE ============ -->
+  <section>
+    <div class="sec-head">
+      <h2>A campanha desligada não estava em queda</h2>
+      <p>
+        ROAS diário da <span class="mono">🟠 23.07.26 | GB | BID CAP</span> em agosto, dia a dia, até o
+        momento em que foi pausada. Se ela estivesse se deteriorando, a linha cairia. Ela não cai.
+      </p>
+    </div>
+    <div class="card">
+      <figure>
+        <div class="chart-title">ROAS diário, BID CAP, agosto de 2026</div>
+        <div class="chart-box" id="box-line"><div class="tip" id="tip-line"></div></div>
+        <figcaption>
+          A faixa clara marca a média da campanha no período (11,20). A linha tracejada em 2,81 é o ROAS
+          da campanha que ficou no ar depois do corte. O gasto diário caiu de cerca de R$ 450 no meio do
+          mês para R$ 180 no fim, o que é teto de lance limitando entrega, não perda de eficiência.
+          Fonte: Meta Ads, atribuição padrão da conta.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ 2. COMPARATIVO ============ -->
+  <section>
+    <div class="sec-head">
+      <h2>O que saiu do ar contra o que ficou</h2>
+      <p>Campanhas com pelo menos 40 compras nos últimos 90 dias, por ROAS de plataforma.</p>
+    </div>
+    <div class="card">
+      <figure>
+        <div class="chart-title">ROAS por campanha</div>
+        <div class="legend" role="list">
+          <span role="listitem"><i style="background:var(--off)"></i>Desligada</span>
+          <span role="listitem"><i style="background:var(--on)"></i>No ar hoje</span>
+        </div>
+        <div class="chart-box" id="box-bars"><div class="tip" id="tip-bars"></div></div>
+        <figcaption>Rótulo direto em cada barra. A tabela abaixo traz os mesmos números com gasto e custo por compra.</figcaption>
+      </figure>
+    </div>
+
+    <div class="tscroll">
+      <table>
+        <caption>Meta Ads, 30 dias até 30.08.2026, fuso da conta. ROAS e compras são atribuição de plataforma.</caption>
+        <thead>
+          <tr><th scope="col">Campanha</th><th scope="col">Estado</th><th scope="col">Gasto</th><th scope="col">Compras</th><th scope="col">ROAS</th><th scope="col">Custo/compra</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hero"><td>🟠 23.07.26 GB BID CAP</td><td><span class="chip off">Pausada 28.08</span></td><td class="n">R$ 7.920</td><td class="n">323</td><td class="big">11,20</td><td class="n">R$ 24,52</td></tr>
+          <tr class="hero"><td>🟠 24.07.26 GB CUP FRIO INTERESSES</td><td><span class="chip off">Pausada 08.08</span></td><td class="n">R$ 1.622</td><td class="n">74</td><td class="big">11,83</td><td class="n">R$ 21,92</td></tr>
+          <tr class="hero"><td>🟠 23.07.26 GB LOW CARB FRIO ABERTO</td><td><span class="chip off">Pausada 28.08</span></td><td class="n">R$ 4.736</td><td class="n">175</td><td class="big">9,70</td><td class="n">R$ 27,06</td></tr>
+          <tr class="warn"><td>🟣 28.08.26 MAX Convs</td><td><span class="chip on">No ar</span></td><td class="n">R$ 3.812</td><td class="n">45</td><td class="big">2,81</td><td class="n">R$ 84,72</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card pull caveat">
+      <p class="big">A campanha nova tem 3 dias e está em aprendizado. Os 2,81 dela vão melhorar.</p>
+      <p style="color:var(--ink-2)">
+        A comparação direta com campanhas maduras não é justa e não estou dizendo que a nova é ruim. O que
+        os dados dizem é outra coisa: a conta gasta cerca de R$ 1.270 por dia em algo ainda não provado
+        enquanto ativos com centenas de conversões de evidência estão desligados.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 3. ORÇAMENTO NO CONJUNTO ERRADO ============ -->
+  <section>
+    <div class="sec-head">
+      <h2>Dentro da campanha ativa, o dinheiro está no conjunto errado</h2>
+      <p>A correção mais barata e mais rápida da conta inteira.</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:10px">02 · Feed/Stories Quente · Gracyanne</div>
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="font-family:Archivo;font-size:42px;font-weight:800;color:var(--on)" class="num">2,05</span>
+          <span style="color:var(--ink-2)">ROAS</span>
+        </div>
+        <p style="color:var(--ink-2);margin:8px 0 0">
+          Recebe <b style="color:var(--ink)">85% do orçamento</b> da campanha. R$ 3.236 gastos,
+          32 compras, custo por compra de R$ 101,12.
+        </p>
+      </div>
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:10px">01 · Campeões</div>
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="font-family:Archivo;font-size:42px;font-weight:800;color:var(--off)" class="num">7,09</span>
+          <span style="color:var(--ink-2)">ROAS</span>
+        </div>
+        <p style="color:var(--ink-2);margin:8px 0 0">
+          Recebe <b style="color:var(--ink)">15% do orçamento</b>. R$ 576 gastos, 13 compras,
+          custo por compra de R$ 44,34.
+        </p>
+      </div>
+    </div>
+    <div class="pull">
+      <p class="big">O conjunto que converte 3,5 vezes melhor recebe um sexto do dinheiro.</p>
+    </div>
+  </section>
+
+  <!-- ============ 4. A RECOMENDAÇÃO DO META ============ -->
+  <section>
+    <div class="sec-head">
+      <h2>A recomendação automática do Meta contraria os dados desta conta</h2>
+      <p>
+        O painel de oportunidades (score 51 de 100) sugere, em mais de trinta campanhas, trocar a meta para
+        Maximizar valor de conversões, prometendo 7% de ROAS a mais. Com R$ 124 mil de evidência, esta conta
+        diz o contrário.
+      </p>
+    </div>
+    <div class="card">
+      <figure>
+        <div class="chart-title">ROAS por meta de otimização do conjunto</div>
+        <div class="chart-box" id="box-goal"><div class="tip" id="tip-goal"></div></div>
+        <figcaption>Uma só cor: aqui a comparação é de magnitude, não de identidade. Fonte: Meta Ads, 90 dias, nível de conjunto.</figcaption>
+      </figure>
+    </div>
+    <div class="tscroll">
+      <table>
+        <caption>Conversões entrega 57% mais ROAS e custo por compra 42% menor que Maximizar valor nesta conta.</caption>
+        <thead><tr><th scope="col">Meta de otimização</th><th scope="col">Conjuntos</th><th scope="col">Gasto</th><th scope="col">Compras</th><th scope="col">ROAS</th><th scope="col">Custo/compra</th></tr></thead>
+        <tbody>
+          <tr class="hero"><td>Conversões <span class="mono" style="color:var(--ink-3);font-size:12px">OFFSITE_CONVERSIONS</span></td><td class="n">87</td><td class="n">R$ 106.947</td><td class="n">2.395</td><td class="big">5,45</td><td class="n">R$ 44,65</td></tr>
+          <tr><td>Maximizar valor <span class="mono" style="color:var(--ink-3);font-size:12px">VALUE</span></td><td class="n">24</td><td class="n">R$ 17.624</td><td class="n">227</td><td class="big">3,47</td><td class="n">R$ 77,64</td></tr>
+          <tr><td>Visitas ao perfil <span class="mono" style="color:var(--ink-3);font-size:12px">PROFILE_VISIT</span></td><td class="n">7</td><td class="n">R$ 6.057</td><td class="n">0</td><td class="big">0,00</td><td class="n">n/a</td></tr>
+          <tr><td>Engajamento de página</td><td class="n">2</td><td class="n">R$ 1.810</td><td class="n">2</td><td class="big">0,22</td><td class="n">R$ 904,87</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 5. DESPERDÍCIO ============ -->
+  <section>
+    <div class="sec-head">
+      <h2>Dinheiro que não volta</h2>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <span class="chip crit">Meta que não vende</span>
+        <div style="font-family:Archivo;font-size:34px;font-weight:800;margin-top:12px" class="num">R$ 7.867</div>
+        <p style="color:var(--ink-2);margin:6px 0 0">
+          5,9% da verba em conjuntos de visita ao perfil e engajamento de página, dentro de uma conta de
+          <b style="color:var(--ink)">performance</b>. Os de visita ao perfil fecharam com zero compras.
+        </p>
+      </div>
+      <div class="card">
+        <span class="chip crit">Criativo que atrai e não vende</span>
+        <div style="font-family:Archivo;font-size:34px;font-weight:800;margin-top:12px" class="num">R$ 4.747</div>
+        <p style="color:var(--ink-2);margin:6px 0 0">
+          Em 4 anúncios "ATRAÇÃO" com <b style="color:var(--ink)">zero compras</b>, apesar de CTR entre 5% e
+          6%. Clique curioso, não comprador. Um deles está no ar desde 17.11.2025.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. CRIATIVOS ============ -->
+  <section>
+    <div class="sec-head">
+      <h2>Os criativos que já provaram que vendem estão todos pausados</h2>
+      <p>Carrossel e collection ocupam o topo da lista. A estrutura nova só usa vídeo e imagem única.</p>
+    </div>
+    <div class="tscroll">
+      <table>
+        <caption>Meta Ads, 90 dias, nível de anúncio. Os 150 anúncios consultados somam 84,7% do gasto da conta.</caption>
+        <thead><tr><th scope="col">Anúncio</th><th scope="col">Estado</th><th scope="col">Gasto</th><th scope="col">Compras</th><th scope="col">ROAS</th><th scope="col">Custo/compra</th></tr></thead>
+        <tbody>
+          <tr class="hero"><td>AD06 · Carrossel</td><td><span class="chip off">Pausado</span></td><td class="n">R$ 605</td><td class="n">38</td><td class="big">19,93</td><td class="n">R$ 15,91</td></tr>
+          <tr class="hero"><td>AD03 · Collection</td><td><span class="chip off">Pausado</span></td><td class="n">R$ 367</td><td class="n">26</td><td class="big">19,83</td><td class="n">R$ 14,13</td></tr>
+          <tr class="hero"><td>AD03 · Carrossel 3</td><td><span class="chip off">Pausado</span></td><td class="n">R$ 1.668</td><td class="n">74</td><td class="big">12,66</td><td class="n">R$ 22,54</td></tr>
+          <tr class="hero"><td>AD06 · Carrossel</td><td><span class="chip off">Pausado</span></td><td class="n">R$ 2.169</td><td class="n">98</td><td class="big">12,44</td><td class="n">R$ 22,13</td></tr>
+          <tr class="hero"><td>AD02</td><td><span class="chip off">Pausado</span></td><td class="n">R$ 3.034</td><td class="n">148</td><td class="big">11,92</td><td class="n">R$ 20,50</td></tr>
+          <tr class="hero"><td>AD01 · Vídeo 1</td><td><span class="chip off">Pausado</span></td><td class="n">R$ 2.319</td><td class="n">106</td><td class="big">11,90</td><td class="n">R$ 21,88</td></tr>
+          <tr class="warn"><td>AD06 · Low Carb</td><td><span class="chip on">No ar</span></td><td class="n">R$ 1.091</td><td class="n">14</td><td class="big">3,28</td><td class="n">R$ 77,92</td></tr>
+          <tr class="warn"><td>AD01 · Vídeo 2</td><td><span class="chip on">No ar</span></td><td class="n">R$ 1.141</td><td class="n">12</td><td class="big">1,86</td><td class="n">R$ 95,05</td></tr>
+          <tr class="warn"><td>AD01 · Vídeo 1</td><td><span class="chip crit">No ar, no prejuízo</span></td><td class="n">R$ 520</td><td class="n">3</td><td class="big" style="color:var(--crit)">0,83</td><td class="n">R$ 173,43</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card pull caveat">
+      <p class="big">Antes de escalar carrossel e collection, o catálogo precisa ser consertado.</p>
+      <p style="color:var(--ink-2)">
+        A verificação de erros acusa "Product Catalog Is Deleted" e "Restore Product Tags" em 11 campanhas
+        mais antigas. Os produtos marcados nesses anúncios foram apagados do catálogo. Isso não afeta a BID
+        CAP nem a LOW CARB, que confirmei campanha a campanha, mas afeta exatamente os formatos de maior
+        ROAS da conta.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 7. PLANO ============ -->
+  <section>
+    <div class="sec-head">
+      <h2>O que fazer, em ordem</h2>
+      <p>Nada abaixo foi executado. É recomendação para aprovação, e a ordem é de impacto sobre esforço.</p>
+    </div>
+
+    <div class="phase">
+      <div class="phase-label">Agora · reversível, alto impacto</div>
+      <ol class="steps">
+        <li><span class="step-n">01</span><div class="step-body">
+          <span class="step-t">Religar a BID CAP, com prazo para trocar o criativo</span>
+          <span class="step-d">Campanha <code>120254843735670102</code>, conjunto <code>120254843736100102</code>. São 535 compras de evidência a ROAS 12. A condição importa: a frequência dela chegou a 5,45 em 90 dias, então religar sem criativo novo acelera a fadiga. Religar já e trocar o criativo em 7 a 10 dias.</span>
+        </div></li>
+        <li><span class="step-n">02</span><div class="step-body">
+          <span class="step-t">Religar a LOW CARB FRIO ABERTO</span>
+          <span class="step-d">Campanha <code>120254853922410102</code>. ROAS 9,70 e frequência 3,83, ou seja, ainda com folga de público.</span>
+        </div></li>
+        <li><span class="step-n">03</span><div class="step-body">
+          <span class="step-t">Rebalancear a campanha que está no ar</span>
+          <span class="step-d">Tirar orçamento do conjunto 02 Quente Gracyanne (ROAS 2,05) e passar para o 01 Campeões (ROAS 7,09). Se estiver em CBO, separar em campanhas distintas, senão o orçamento foge de novo para o conjunto pior.</span>
+        </div></li>
+        <li><span class="step-n">04</span><div class="step-body">
+          <span class="step-t">Desligar o anúncio AD01 · Vídeo 1</span>
+          <span class="step-d">ROAS 0,83. Está perdendo dinheiro a R$ 173,43 por compra.</span>
+        </div></li>
+      </ol>
+    </div>
+
+    <div class="phase">
+      <div class="phase-label">Esta semana</div>
+      <ol class="steps" start="5">
+        <li><span class="step-n">05</span><div class="step-body">
+          <span class="step-t">Religar a CUP FRIO INTERESSES</span>
+          <span class="step-d">ROAS 11,83 com frequência 2,26. Pausada em 08.08, tem público menos desgastado que a BID CAP.</span>
+        </div></li>
+        <li><span class="step-n">06</span><div class="step-body">
+          <span class="step-t">Repor os criativos campeões nos conjuntos que voltarem</span>
+          <span class="step-d">AD02, AD01 Vídeo 1, AD06 Carrossel, AD03 Carrossel 3 e AD04 Banner 2.</span>
+        </div></li>
+        <li><span class="step-n">07</span><div class="step-body">
+          <span class="step-t">Consertar o catálogo</span>
+          <span class="step-d">Repor os produtos apagados com o mesmo retailer ID, antes de subir carrossel e collection.</span>
+        </div></li>
+        <li><span class="step-n">08</span><div class="step-body">
+          <span class="step-t">Cortar as metas que não vendem</span>
+          <span class="step-d">Mover visita ao perfil e engajamento de página para a conta de Awareness, ou desligar. São R$ 7.867 nos 90 dias.</span>
+        </div></li>
+        <li><span class="step-n">09</span><div class="step-body">
+          <span class="step-t">Arquivar os 4 anúncios "ATRAÇÃO"</span>
+          <span class="step-d">R$ 4.747 gastos, zero compras.</span>
+        </div></li>
+      </ol>
+    </div>
+
+    <div class="phase">
+      <div class="phase-label">Testar, não aplicar em massa</div>
+      <ol class="steps" start="10">
+        <li><span class="step-n">10</span><div class="step-body">
+          <span class="step-t">Maximizar valor de conversões</span>
+          <span class="step-d">Os dados desta conta dizem que é pior. Se for testar, um conjunto espelho contra um de Conversões, mesmo público e mesmo criativo, decidindo por dado desta conta e não pela recomendação do painel.</span>
+        </div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ 8. LIMITAÇÕES ============ -->
+  <section>
+    <div class="sec-head">
+      <h2>O que este dado não prova</h2>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">
+      <div><b>ROAS aqui é atribuição do Meta, não faturamento da Shopify.</b>
+        <span style="color:var(--ink-2)">A receita real da loja não entrou nesta análise, porque o conector Shopify está com token expirado. O ROAS de 4,86 é o que o Meta se atribui, e tipicamente superestima. Só o cruzamento com a Shopify dá o ROAS consolidado.</span></div>
+      <hr class="rule">
+      <div><b>A janela de atribuição não foi confirmada.</b>
+        <span style="color:var(--ink-2)">A API devolve apenas "padrão da conta" sem dizer qual é. Uma janela mais larga infla todos os ROAS na mesma proporção, o que preserva o ranking mas muda o nível.</span></div>
+      <hr class="rule">
+      <div><b>Performance passada não garante retorno igual.</b>
+        <span style="color:var(--ink-2)">Público desgasta e leilão muda, e a BID CAP já estava com frequência 5,45. O que os dados sustentam é que essas campanhas merecem voltar e ser medidas de novo, não que vão repetir ROAS 12.</span></div>
+      <hr class="rule">
+      <div><b>A conta Konjac Massa MF Awareness não entrou.</b>
+        <span style="color:var(--ink-2)">O conector marca <code style="font-family:'IBM Plex Mono',monospace;font-size:12px">is_ads_mcp_enabled: false</code> para ela, então não é consultável. Se houver verba relevante lá, a leitura da marca está incompleta.</span></div>
+      <hr class="rule">
+      <div><b>Correlação, não causa.</b>
+        <span style="color:var(--ink-2)">A queda de ROAS depois de 28.08 coincide com a reestruturação, mas coincide também com criativo novo, público novo e fase de aprendizado ao mesmo tempo. Não dá para isolar qual dos três pesa mais sem teste.</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <hr class="rule" style="margin-bottom:8px">
+    <div><b>Fonte:</b> Meta Ads, conta 3051443881648697 (Konjac Massa MF - Performance - Agências), via conector MCP, em 31.08.2026. Moeda BRL.</div>
+    <div><b>Janelas:</b> 90 dias e 30 dias até 30.08.2026, mais série diária de agosto. <b>Fuso:</b> o da conta de anúncios, que aparenta não ser America/Sao_Paulo e está pendente de confirmação.</div>
+    <div><b>Cobertura:</b> as 200 campanhas consultadas somam exatamente os R$ 133.065,14 da conta. Conjuntos cobrem 99,5% e anúncios 84,7% do gasto.</div>
+    <div><b>Identidade visual pendente:</b> a paleta da marca ainda não foi definida, então este painel usa cores analíticas neutras, validadas para daltonismo. Não é peça final de cliente.</div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var BRL = function(v){ return "R$ " + v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); };
+  var N2  = function(v){ return v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); };
+  var css = function(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); };
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function el(t,a){ var e=document.createElementNS(SVGNS,t); for(var k in a){ if(a[k]!==null&&a[k]!==undefined) e.setAttribute(k,a[k]); } return e; }
+
+  /* ---- dados: ROAS diário da BID CAP, agosto 2026 (Meta Ads) ---- */
+  var DIA = [
+    [1,7.54,195.38,7],[2,11.01,412.67,18],[3,14.66,389.28,16],[4,12.09,408.52,18],
+    [5,11.13,312.99,13],[6,19.73,206.47,14],[7,9.23,263.78,9],[8,10.55,377.51,13],
+    [9,11.65,335.55,12],[10,12.71,307.24,14],[11,15.51,466.30,21],[12,20.36,197.80,14],
+    [13,7.83,487.77,15],[14,12.00,313.65,13],[15,11.23,322.27,17],[16,10.50,337.90,14],
+    [17,7.38,393.40,14],[18,9.51,391.22,14],[19,8.74,270.26,11],[20,7.11,232.46,7],
+    [21,17.30,163.36,9],[22,9.65,158.18,5],[23,9.77,229.45,5],[24,16.03,166.93,11],
+    [25,7.93,181.89,8],[26,9.07,198.56,6],[27,4.41,178.82,4]
+  ];
+  var MEDIA = 11.20, ATIVA = 2.81;
+
+  function lineChart(){
+    var box = document.getElementById("box-line"), tip = document.getElementById("tip-line");
+    var W = box.clientWidth || 820, H = 300;
+    var narrow = W < 560;
+    var m = {t:16, r: narrow ? 18 : 92, b:34, l:44};
+    var iw = W-m.l-m.r, ih = H-m.t-m.b;
+    var maxY = 22;
+    var x = function(d){ return m.l + (d-1)/(27-1)*iw; };
+    var y = function(v){ return m.t + ih - (v/maxY)*ih; };
+
+    box.querySelectorAll("svg").forEach(function(s){s.remove();});
+    var svg = el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":
+      "ROAS diário da campanha BID CAP em agosto de 2026, variando entre 4,41 e 20,36, sem tendência de queda até ser pausada em 28 de agosto."});
+
+    /* faixa da média */
+    svg.appendChild(el("rect",{x:m.l,y:y(MEDIA)-1,width:iw,height:2,fill:css("--off"),opacity:.16}));
+
+    /* grade + eixo Y */
+    [0,5,10,15,20].forEach(function(v){
+      svg.appendChild(el("line",{x1:m.l,x2:m.l+iw,y1:y(v),y2:y(v),stroke:css("--grid"),"stroke-width":1}));
+      var t = el("text",{x:m.l-9,y:y(v)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":11,
+        "font-family":"IBM Plex Mono, monospace"}); t.textContent = v; svg.appendChild(t);
+    });
+
+    /* eixo X */
+    [1,5,10,15,20,25,27].forEach(function(d){
+      var t = el("text",{x:x(d),y:H-12,"text-anchor":"middle",fill:css("--ink-3"),"font-size":11,
+        "font-family":"IBM Plex Mono, monospace"});
+      t.textContent = d + (d===27?" ago":""); svg.appendChild(t);
+    });
+
+    /* referência: campanha ativa */
+    svg.appendChild(el("line",{x1:m.l,x2:m.l+iw,y1:y(ATIVA),y2:y(ATIVA),stroke:css("--on"),
+      "stroke-width":2,"stroke-dasharray":"5 4"}));
+    var rt = el("text",{x:m.l+6,y:y(ATIVA)-8,fill:css("--on"),"font-size":11.5,"font-weight":600,
+      "font-family":"IBM Plex Sans, sans-serif"});
+    rt.textContent = "2,81 · campanha que ficou no ar"; svg.appendChild(rt);
+
+    /* área + linha */
+    var dArea = "M"+x(1)+","+(m.t+ih), dLine = "";
+    DIA.forEach(function(p,i){
+      dArea += " L"+x(p[0])+","+y(p[1]);
+      dLine += (i?" L":"M")+x(p[0])+","+y(p[1]);
+    });
+    dArea += " L"+x(27)+","+(m.t+ih)+" Z";
+    svg.appendChild(el("path",{d:dArea,fill:css("--off"),opacity:.10}));
+    svg.appendChild(el("path",{d:dLine,fill:"none",stroke:css("--off"),"stroke-width":2,
+      "stroke-linejoin":"round","stroke-linecap":"round"}));
+
+    /* rótulo da média */
+    var mt = el("text",{x:m.l+iw-4,y:y(MEDIA)-9,"text-anchor":"end",fill:css("--off"),"font-size":11.5,
+      "font-weight":600,"font-family":"IBM Plex Sans, sans-serif"});
+    mt.textContent = "média 11,20"; svg.appendChild(mt);
+
+    /* marcador do último dia antes da pausa */
+    var last = DIA[DIA.length-1];
+    svg.appendChild(el("circle",{cx:x(last[0]),cy:y(last[1]),r:5,fill:css("--card"),
+      stroke:css("--off"),"stroke-width":2}));
+    var lt = el("text",{
+      x: narrow ? x(last[0])-10 : x(last[0])+12,
+      y: narrow ? y(last[1])-14 : y(last[1])+4,
+      "text-anchor": narrow ? "end" : "start",
+      fill:css("--ink-2"),"font-size":11.5,"font-family":"IBM Plex Sans, sans-serif"});
+    lt.textContent = "pausada aqui"; svg.appendChild(lt);
+
+    /* camada de hover */
+    var crosshair = el("line",{y1:m.t,y2:m.t+ih,stroke:css("--ink-3"),"stroke-width":1,opacity:0});
+    svg.appendChild(crosshair);
+    var dot = el("circle",{r:5,fill:css("--off"),stroke:css("--card"),"stroke-width":2,opacity:0});
+    svg.appendChild(dot);
+    var hit = el("rect",{x:m.l,y:m.t,width:iw,height:ih,fill:"transparent"});
+    svg.appendChild(hit);
+
+    function move(ev){
+      var r = svg.getBoundingClientRect();
+      var px = (ev.clientX - r.left) * (W / r.width);
+      var d = Math.round(((px - m.l)/iw)*(27-1) + 1);
+      d = Math.max(1, Math.min(27, d));
+      var p = DIA[d-1]; if(!p) return;
+      crosshair.setAttribute("x1",x(p[0])); crosshair.setAttribute("x2",x(p[0]));
+      crosshair.setAttribute("opacity",.45);
+      dot.setAttribute("cx",x(p[0])); dot.setAttribute("cy",y(p[1])); dot.setAttribute("opacity",1);
+      tip.innerHTML = "<b>"+p[0]+" de agosto</b><br>ROAS "+N2(p[1])+"<br>"+BRL(p[2])+" · "+p[3]+" compras";
+      tip.style.opacity = 1;
+      var left = (x(p[0]) / W) * r.width + 14;
+      if(left > r.width - 170) left = left - 190;
+      tip.style.left = left + "px";
+      tip.style.top  = ((y(p[1]) / H) * r.height - 10) + "px";
+    }
+    function leave(){ crosshair.setAttribute("opacity",0); dot.setAttribute("opacity",0); tip.style.opacity = 0; }
+    hit.addEventListener("mousemove",move);
+    hit.addEventListener("mouseleave",leave);
+    box.appendChild(svg);
+  }
+
+  /* ---- barras: ROAS por campanha ---- */
+  var CAMP = [
+    {n:"24.07 CUP · Interesses",  r:11.83, s:1622, p:74,  on:false},
+    {n:"23.07 BID CAP",           r:11.20, s:7920, p:323, on:false},
+    {n:"23.07 LOW CARB · Frio",   r:9.70,  s:4736, p:175, on:false},
+    {n:"28.08 MAX Convs",         r:2.81,  s:3812, p:45,  on:true }
+  ];
+  /* ---- barras: ROAS por meta de otimização ---- */
+  var GOAL = [
+    {n:"Conversões",           r:5.45, s:106947, p:2395},
+    {n:"Maximizar valor",      r:3.47, s:17624,  p:227},
+    {n:"Engajamento de página",r:0.22, s:1810,   p:2},
+    {n:"Visitas ao perfil",    r:0.00, s:6057,   p:0}
+  ];
+
+  function barChart(boxId, tipId, data, mono, label){
+    var box = document.getElementById(boxId), tip = document.getElementById(tipId);
+    var W = box.clientWidth || 820;
+    /* Abaixo de 560px o rótulo não cabe ao lado da barra: vai para cima dela. */
+    var narrow = W < 560;
+    var rowH = narrow ? 58 : 44, gap = narrow ? 14 : 10;
+    var m = {t:6, r:56, b:6, l: narrow ? 0 : Math.min(215, Math.max(150, W*0.27))};
+    var H = data.length*rowH + (data.length-1)*gap + m.t + m.b;
+    var iw = W - m.l - m.r;
+    var maxR = Math.max.apply(null, data.map(function(d){return d.r;})) * (narrow ? 1.22 : 1.14);
+    var barH = narrow ? 20 : rowH-18;
+
+    box.querySelectorAll("svg").forEach(function(s){s.remove();});
+    var svg = el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":label});
+
+    data.forEach(function(d,i){
+      var yTop = m.t + i*(rowH+gap);
+      var barY = narrow ? yTop+24 : yTop+(rowH-barH)/2;
+      var bw = Math.max(2, (d.r/maxR)*iw);
+      var color = mono ? css("--off") : (d.on ? css("--on") : css("--off"));
+
+      var nm = el("text",{
+        x: narrow ? 0 : m.l-12,
+        y: narrow ? yTop+13 : yTop+rowH/2+5,
+        "text-anchor": narrow ? "start" : "end",
+        fill:css("--ink"),"font-size": narrow ? 12.5 : 13,
+        "font-family":"IBM Plex Sans, sans-serif"});
+      nm.textContent = d.n; svg.appendChild(nm);
+
+      svg.appendChild(el("rect",{x:m.l,y:barY,width:iw,height:barH,fill:css("--grid"),opacity:.35,rx:2}));
+      var bar = el("rect",{x:m.l,y:barY,width:bw,height:barH,fill:color,rx:4,
+        stroke:css("--card"),"stroke-width":2});
+      svg.appendChild(bar);
+
+      var vt = el("text",{x:m.l+bw+10,y:barY+barH/2+5,fill:css("--ink"),"font-size":14,
+        "font-weight":700,"font-family":"Archivo, sans-serif","font-variant-numeric":"tabular-nums"});
+      vt.textContent = N2(d.r); svg.appendChild(vt);
+
+      var hit = el("rect",{x:0,y:yTop,width:W,height:rowH,fill:"transparent"});
+      hit.addEventListener("mousemove",function(ev){
+        var r = svg.getBoundingClientRect();
+        tip.innerHTML = "<b>"+d.n+"</b><br>ROAS "+N2(d.r)+"<br>R$ "+d.s.toLocaleString("pt-BR")+" · "+
+          d.p.toLocaleString("pt-BR")+" compras";
+        tip.style.opacity = 1;
+        var left = (ev.clientX - r.left) + 14;
+        if(left > r.width - 190) left = left - 200;
+        tip.style.left = left + "px";
+        tip.style.top  = ((yTop+rowH) / H) * r.height + "px";
+      });
+      hit.addEventListener("mouseleave",function(){ tip.style.opacity = 0; });
+      svg.appendChild(hit);
+    });
+    box.appendChild(svg);
+  }
+
+  function drawAll(){
+    lineChart();
+    barChart("box-bars","tip-bars",CAMP,false,
+      "ROAS por campanha: as tres pausadas ficam entre 9,70 e 11,83; a que esta no ar marca 2,81.");
+    barChart("box-goal","tip-goal",GOAL,true,
+      "ROAS por meta de otimizacao: Conversoes 5,45; Maximizar valor 3,47; Engajamento de pagina 0,22; Visitas ao perfil 0.");
+  }
+
+  drawAll();
+  var t; window.addEventListener("resize",function(){ clearTimeout(t); t=setTimeout(drawAll,160); });
+  if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawAll);
+  new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+})();
+</script>

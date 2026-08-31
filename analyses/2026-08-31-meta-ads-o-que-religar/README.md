@@ -31,6 +31,8 @@ série diária mostra que nenhuma das duas estava em queda quando foi desligada.
   (84,7%); o resto está em anúncios de gasto pequeno, que não mudam a conclusão.
 - **Recortes:** `agregado_campanhas_90d.csv`, `agregado_conjuntos_90d.csv`,
   `agregado_anuncios_90d.csv`.
+- **Painel:** fonte em `dashboards/2026-08-31-meta-ads-o-que-religar/painel.html`,
+  publicado em https://claude.ai/code/artifact/96991d15-a6d3-4fdf-a7ea-b9029a9b935f
 
 ### A conta em 90 dias
 
