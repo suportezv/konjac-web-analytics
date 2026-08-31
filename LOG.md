@@ -17,6 +17,24 @@ Formato de cada entrada:
 
 ---
 
+## 2026-08-31  Meta Ads: o que vale religar
+
+- **Quem pediu**: suporte@zavi.ag
+- **Pergunta de negócio**: quais campanhas, conjuntos e anúncios vale ligar de novo,
+  e quais otimizações devemos fazer?
+- **Consultado**: Meta Ads, conta `3051443881648697` (Konjac Massa MF - Performance -
+  Agências), via conector MCP, agora autorizado. Janelas de 90 e 30 dias mais série
+  diária de agosto, nos níveis de campanha (200), conjunto (120) e anúncio (150).
+  Atribuição: padrão da conta (`attribution_windows: ["default"]`, valor não
+  confirmado no Ads Manager). Fuso da conta a confirmar, ver CLAUDE.md.
+- **Resposta em uma frase**: a reestruturação de 28.08 desligou as duas melhores
+  campanhas da conta (ROAS 11,20 e 9,70, com 498 compras de evidência nos últimos 30
+  dias) e deixou no ar uma campanha a ROAS 2,81 cujo orçamento ainda está 85%
+  concentrado no pior dos dois conjuntos dela.
+- **Entrega**: `analyses/2026-08-31-meta-ads-o-que-religar/` com achado, método,
+  10 recomendações priorizadas, limitações e três recortes agregados em CSV.
+  Nenhuma alteração foi executada na conta: tudo é recomendação para aprovação.
+
 ## 2026-08-27  Montagem da célula e diagnóstico de acesso
 
 - **Quem pediu**: suporte@zavi.ag

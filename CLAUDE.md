@@ -26,7 +26,7 @@ existe para o resto da equipe.
 | Shopify (konjacmassamf.com.br) | Conector MCP `Shopify` | Conectado na conta, **token expirado na sessão**. Loja **não confirmada**. |
 | GA4 | Service account + `google-analytics-data` | **Sem conector MCP.** Sem credencial e sem rota de rede. |
 | Google Ads | OAuth2 refresh token + `google-ads` | **Sem conector MCP.** Sem credencial e sem rota de rede. |
-| Meta Ads | Conector MCP `Meta Ads MCP` | Instalado, **não autorizado e não habilitado neste chat** (rechecado em 2026-08-27). Sem rota alternativa: Graph API bloqueada e Konjac não existe no Metricool. |
+| Meta Ads | Conector MCP `Meta Ads MCP` | **OPERACIONAL desde 2026-08-31.** Autorizado e habilitado no chat. Leitura completa de campanha, conjunto e anúncio. |
 | BigQuery | Service account + `google-cloud-bigquery` | **Sem conector MCP.** Sem credencial e sem rota de rede. |
 
 ---
@@ -44,7 +44,20 @@ responder de verdade, na própria sessão que o preencher.
   Stream de dados da loja e ID de medição: **PENDENTE**.
 - **Google Ads**: MCC (`login_customer_id`) e conta do cliente (`customer_id`),
   ambos sem hífens: **PENDENTE**. Moeda e fuso da conta: **PENDENTE**.
-- **Meta Ads**: `act_<id>` da conta de anúncios, moeda e fuso: **PENDENTE**.
+- **Meta Ads**: a Konjac tem **três** contas no business `392689994582822`.
+  Confirmadas em 2026-08-31:
+  - `3051443881648697` **Konjac Massa MF - Performance - Agências**: a conta
+    operacional. BRL, ativa, R$ 133.065,14 em 90 dias. **É esta que responde por
+    performance.**
+  - `474440398443354` **Alfinet | Konjac Massa MF**: ativa e consultável, mas
+    **R$ 0,00 gastos em 90 dias**. Vazia hoje.
+  - `2345619189520897` **Konjac Massa MF - Awareness**: `is_ads_mcp_enabled: false`,
+    então o conector **não permite consultar**. Toda leitura de awareness fica
+    incompleta até o Meta liberar o MCP nela.
+  - Fuso da conta: **a confirmar**. Os timestamps da API voltam com offset `-0700`,
+    o que indica fuso do Pacífico e **não** America/Sao_Paulo (ver Gotchas).
+  - Janela de atribuição: **PENDENTE**. A API devolve `attribution_windows:
+    ["default"]` sem dizer qual é. Confirmar no Ads Manager.
 - **BigQuery**: projeto, dataset consolidado, localização (`US`, `southamerica-east1`
   ou outra): **PENDENTE**. Tabelas e granularidade: **PENDENTE** (ver Inventário).
 
@@ -162,6 +175,23 @@ siga; se algum deixar de valer, corrija aqui e commite.
   Não confunda o Metricool desta célula com o do estúdio de conteúdo: lá ele serve
   para agendamento, aqui só serviria como fonte de mídia, e hoje não serve.
 - A conta tem mais de uma loja Shopify. **Sempre `get-shop-info` antes de consultar.**
+- **O Meta Ads MCP devolve resultado grande em arquivo, não no chat.** Consulta de
+  100 campanhas com 20 campos estoura o limite de tokens e o conteúdo vai para
+  `tool-results/*.txt`, com schema `{ad_entities: <string JSON>, pagination}`.
+  Processe com `jq -r '.ad_entities' arquivo | ...`: é um JSON **dentro de uma
+  string**, precisa de dois parses.
+- **`ads_get_ad_entities` pagina por linha, não por entidade.** Com
+  `time_increment: "1"` o `limit` conta linhas de dia, então 60 linhas cobrem poucas
+  campanhas. Confira sempre se a soma dos gastos bate com o total da conta antes de
+  concluir qualquer coisa.
+- **Nomes de campo do Meta MCP não são os da Graph API.** Não existe `spend`,
+  `purchases` nem `purchase_value`: é `amount_spent`, `omni_purchase` e
+  `purchase_roas`. `cost_per_result` não existe em nível de conta. Rode
+  `ads_get_field_context` antes de montar a consulta.
+- **`ads_get_ad_accounts` devolve as contas de TODOS os clientes da agência.** Filtre
+  por `business_name` antes de qualquer coisa e nunca consulte conta de outro cliente.
+- **`is_ads_mcp_enabled: false` bloqueia a conta**, mesmo com `is_queryable: true`.
+  É o caso da conta de Awareness da Konjac.
 
 ### Autenticação Google
 
@@ -181,6 +211,12 @@ siga; se algum deixar de valer, corrija aqui e commite.
   Paulo. Confirmar no inventário e registrar aqui: **PENDENTE**.
 - Shopify entrega `createdAt` em UTC (ISO 8601) mas o ShopifyQL usa o fuso da loja.
   Uma mesma pergunta pelos dois caminhos pode dar dias diferentes.
+- **A conta de Meta Ads parece não estar em America/Sao_Paulo.** Todo timestamp da
+  API (`created_time`, `updated_time`) volta com offset `-0700`, que é fuso do
+  Pacífico. Se for isso mesmo, o dia do Meta vira às 4h da manhã em São Paulo e
+  **não fecha com o dia da Shopify**. Confirmar no Ads Manager e registrar aqui:
+  **PENDENTE**. Até confirmar, não cruze dia a dia de Meta com dia a dia de Shopify
+  sem avisar da diferença.
 
 ---
 
