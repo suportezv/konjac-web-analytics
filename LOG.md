@@ -17,6 +17,26 @@ Formato de cada entrada:
 
 ---
 
+## 2026-09-01  Divisão dos R$ 65 mil de Meta em setembro
+
+- **Quem pediu**: suporte@zavi.ag
+- **Pergunta de negócio**: como dividir os R$ 65.000 de setembro em Meta,
+  considerando julho e todo o histórico da conta, sem usar quatro criativos vetados?
+- **Consultado**: Meta Ads, conta `3051443881648697`. Histórico mensal completo
+  (`maximum`, 18 meses tabulados) mais os cortes de 90 dias por campanha, conjunto e
+  anúncio. Atribuição padrão da conta, ainda não confirmada.
+- **Contexto novo do cliente**: as duas campanhas foram pausadas em 28.08 por não
+  estarem escalando, não por ineficiência. O dado sustenta: a BID CAP usava teto de
+  lance e gastava 19% do próprio orçamento diário.
+- **Resposta em uma frase**: R$ 65.000 é o patamar mais confortável do histórico
+  (8 meses na faixa R$ 50 a 70 mil a ROAS 5,69), então a divisão proposta é
+  R$ 40.000 em frio de escala, R$ 12.000 na estrutura da BID CAP com custo por
+  resultado no lugar do teto de lance, R$ 8.000 em quente e R$ 5.000 em teste de
+  criativo, com dois alertas: o CPM triplicou para R$ 36,37 e o plano de mídia
+  subdimensiona o Meta em cerca de R$ 200 mil.
+- **Entrega**: `analyses/2026-09-01-plano-meta-setembro/` com achado, método,
+  divisão, projeção em três cenários, cinco pré-requisitos e limitações.
+
 ## 2026-08-31  Meta Ads: o que vale religar
 
 - **Quem pediu**: suporte@zavi.ag
