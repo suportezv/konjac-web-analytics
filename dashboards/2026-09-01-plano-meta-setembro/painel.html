@@ -1,0 +1,539 @@
+<title>Os R$ 65 Mil de Setembro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#E8EBE7; --card:#F6F7F5; --card-2:#EFF1ED;
+  --line:#D3D9D2; --line-soft:#E1E6E0;
+  --ink:#141A18; --ink-2:#4A5350; --ink-3:#79837F;
+  --off:#00897A; --on:#D98A00; --crit:#C4342A;
+  --r1:#00594E; --r2:#00776A; --r3:#109C8B; --r4:#6FC3B6;
+  --off-wash:rgba(0,137,122,.10); --on-wash:rgba(217,138,0,.12); --crit-wash:rgba(196,52,42,.10);
+  --grid:rgba(20,26,24,.09);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0E1113; --card:#14181B; --card-2:#191E21;
+    --line:#282F33; --line-soft:#1F2528;
+    --ink:#EEF2F0; --ink-2:#A3AFAA; --ink-3:#6E7A75;
+    --off:#19A891; --on:#C2870C; --crit:#EA5545;
+    --r1:#0C7A69; --r2:#12A08B; --r3:#35C0AA; --r4:#7FD8C9;
+    --off-wash:rgba(25,168,145,.14); --on-wash:rgba(194,135,12,.16); --crit-wash:rgba(234,85,69,.14);
+    --grid:rgba(238,242,240,.10);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0E1113; --card:#14181B; --card-2:#191E21;
+  --line:#282F33; --line-soft:#1F2528;
+  --ink:#EEF2F0; --ink-2:#A3AFAA; --ink-3:#6E7A75;
+  --off:#19A891; --on:#C2870C; --crit:#EA5545;
+  --r1:#0C7A69; --r2:#12A08B; --r3:#35C0AA; --r4:#7FD8C9;
+  --off-wash:rgba(25,168,145,.14); --on-wash:rgba(194,135,12,.16); --crit-wash:rgba(234,85,69,.14);
+  --grid:rgba(238,242,240,.10);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 22px 88px;display:flex;flex-direction:column;gap:34px}
+h1,h2{font-family:Archivo,system-ui,sans-serif;text-wrap:balance;margin:0;letter-spacing:-.015em}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.num{font-variant-numeric:tabular-nums}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+h1{font-size:clamp(32px,5.5vw,54px);font-weight:800;line-height:1.03}
+.standfirst{font-size:clamp(16px,2vw,19px);color:var(--ink-2);max-width:64ch;line-height:1.55}
+.standfirst b{color:var(--ink);font-weight:600}
+.masthead{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:24px}
+section{display:flex;flex-direction:column;gap:16px}
+.sec-head{display:flex;flex-direction:column;gap:5px}
+h2{font-size:clamp(21px,2.6vw,27px);font-weight:700}
+.sec-head p{margin:0;color:var(--ink-2);max-width:67ch}
+.rule{height:1px;background:var(--line);border:0;margin:0}
+.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:580px;font-size:14px}
+th,td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal;min-width:190px}
+thead th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);background:var(--card-2)}
+tbody tr:last-child td{border-bottom:0}
+td.n{font-variant-numeric:tabular-nums}
+td.big{font-family:Archivo,sans-serif;font-weight:700;font-size:15.5px;font-variant-numeric:tabular-nums}
+tr.hero td{background:var(--off-wash)}
+tr.tot td{background:var(--card-2);font-weight:600;border-top:2px solid var(--line)}
+caption{caption-side:bottom;text-align:left;padding:10px 14px;font-size:12.5px;color:var(--ink-3);
+  border-top:1px solid var(--line-soft)}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:baseline}
+figure{margin:0;display:flex;flex-direction:column;gap:12px}
+figcaption{font-size:12.5px;color:var(--ink-3);line-height:1.5}
+.chart-title{font-family:Archivo,sans-serif;font-size:15px;font-weight:600}
+.chart-box{position:relative;width:100%}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .1s;background:var(--card);
+  border:1px solid var(--line);border-radius:3px;padding:8px 10px;font-size:12.5px;line-height:1.45;
+  box-shadow:0 4px 14px rgba(0,0,0,.16);z-index:5;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tip b{font-family:Archivo,sans-serif}
+.alert{border-left:3px solid var(--crit);padding:2px 0 2px 18px;display:flex;flex-direction:column;gap:8px}
+.alert .big{font-family:Archivo,sans-serif;font-size:clamp(17px,2.2vw,21px);font-weight:600;line-height:1.4;
+  text-wrap:balance}
+.pull{border-left:3px solid var(--off);padding:2px 0 2px 18px;display:flex;flex-direction:column;gap:8px}
+.pull .big{font-family:Archivo,sans-serif;font-size:clamp(17px,2.2vw,21px);font-weight:600;line-height:1.4;
+  text-wrap:balance}
+.pull p,.alert p{margin:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:4px;overflow:hidden}
+ol.steps li{background:var(--card);padding:16px 20px;display:grid;grid-template-columns:30px 1fr;gap:14px;
+  align-items:start}
+.step-n{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;color:var(--ink-3);padding-top:2px}
+.step-body{display:flex;flex-direction:column;gap:5px;min-width:0}
+.step-t{font-family:Archivo,sans-serif;font-weight:600;font-size:15.5px;line-height:1.35}
+.step-d{font-size:14px;color:var(--ink-2);line-height:1.55}
+.step-d code{font-family:"IBM Plex Mono",monospace;font-size:12px;background:var(--card-2);
+  border:1px solid var(--line-soft);padding:1px 5px;border-radius:3px}
+footer{color:var(--ink-3);font-size:13px;display:flex;flex-direction:column;gap:8px}
+footer b{color:var(--ink-2);font-weight:600}
+:focus-visible{outline:2px solid var(--off);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow"><span>Konjac Massa MF</span><span>·</span><span>Meta Ads · conta 3051443881648697</span>
+      <span>·</span><span>Plano de setembro de 2026</span></div>
+    <h1>Os R$ 65 mil de setembro</h1>
+    <p class="standfirst">
+      <b>R$ 65 mil não é escalar esta conta, é voltar ao patamar onde ela mais rodou.</b>
+      Foram 8 meses na faixa de R$ 50 a 70 mil com ROAS 5,69, e três meses acima de R$ 100 mil.
+      O gargalo de setembro não é verba nem público: é o CPM, que triplicou para R$ 36,37, e o teto
+      de lance, que impediu a melhor campanha de gastar 81% do próprio orçamento.
+    </p>
+  </header>
+
+  <!-- ====== A DIVISÃO ====== -->
+  <section>
+    <div class="sec-head"><h2>A divisão proposta</h2>
+      <p>R$ 65.000 no mês, o que dá R$ 2.167 por dia de média.</p></div>
+    <div class="card">
+      <figure>
+        <div class="chart-box" id="box-split"><div class="tip" id="tip-split"></div></div>
+        <figcaption>Tom mais escuro é a maior fatia. Os quatro blocos somam exatamente R$ 65.000.</figcaption>
+      </figure>
+    </div>
+    <div class="tscroll">
+      <table>
+        <caption>ROAS esperado a partir das faixas que a própria conta entregou. O bloco 4 é teste, então não carrega meta de retorno.</caption>
+        <thead><tr><th scope="col">Bloco</th><th scope="col">Verba</th><th scope="col">%</th>
+          <th scope="col">Por dia</th><th scope="col">Estratégia de lance</th><th scope="col">ROAS esperado</th></tr></thead>
+        <tbody>
+          <tr class="hero"><td><span class="swatch" style="background:var(--r1)"></span>1 · Frio e aberto de escala</td>
+            <td class="n">R$ 40.000</td><td class="n">61,5%</td><td class="n">R$ 1.333</td>
+            <td class="n">Highest volume</td><td class="big">4,5 a 5,5</td></tr>
+          <tr class="hero"><td><span class="swatch" style="background:var(--r2)"></span>2 · Herdeiro da BID CAP</td>
+            <td class="n">R$ 12.000</td><td class="n">18,5%</td><td class="n">R$ 400</td>
+            <td class="n">Cost cap R$ 35 a 40</td><td class="big">6 a 9</td></tr>
+          <tr><td><span class="swatch" style="background:var(--r3)"></span>3 · Quente e recuperação</td>
+            <td class="n">R$ 8.000</td><td class="n">12,3%</td><td class="n">R$ 267</td>
+            <td class="n">Highest volume</td><td class="big">4 a 8</td></tr>
+          <tr><td><span class="swatch" style="background:var(--r4)"></span>4 · Teste de criativo novo</td>
+            <td class="n">R$ 5.000</td><td class="n">7,7%</td><td class="n">R$ 167</td>
+            <td class="n">Orçamento por conjunto</td><td class="n" style="color:var(--ink-3)">é teste</td></tr>
+          <tr class="tot"><td>Total</td><td class="n">R$ 65.000</td><td class="n">100%</td>
+            <td class="n">R$ 2.167</td><td></td><td class="n">4,0 a 6,0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ====== ALERTA DE RITMO ====== -->
+  <section>
+    <div class="card alert">
+      <p class="big">Antes de ligar a verba: a campanha que está no ar consome R$ 95 mil no ritmo atual.</p>
+      <p style="color:var(--ink-2)">
+        A <span class="mono">🟣 28.08.26 MAX Convs</span> acumulou R$ 15.834 desde 28 de agosto, cerca de
+        R$ 3.170 por dia, rodando a ROAS 2,52. Mantido esse ritmo, ela sozinha gasta R$ 95.000 em setembro,
+        R$ 30.000 acima de toda a verba de Meta. O teto diário dela é a primeira coisa a mexer.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== HISTÓRICO ====== -->
+  <section>
+    <div class="sec-head"><h2>A conta já provou que absorve esse volume</h2>
+      <p>Dezoito meses de investimento, retorno e CPM, lado a lado. Três painéis, um eixo cada, porque
+        empilhar escalas diferentes no mesmo eixo esconde exatamente o que importa aqui.</p></div>
+    <div class="card">
+      <figure>
+        <div class="chart-title">Investimento, ROAS e CPM por mês</div>
+        <div class="chart-box" id="box-hist"><div class="tip" id="tip-hist"></div></div>
+        <figcaption>
+          A linha tracejada no painel de cima marca os R$ 65.000 de setembro. A conta ficou acima disso
+          em 5 dos 18 meses e ficou perto em outros 4. O painel de baixo é o problema:
+          o CPM saiu de R$ 9 a R$ 15 e chegou a R$ 36,37 em agosto.
+        </figcaption>
+      </figure>
+    </div>
+    <div class="tscroll">
+      <table>
+        <caption>Meta Ads, histórico mensal da conta. ROAS e compras são atribuição de plataforma.</caption>
+        <thead><tr><th scope="col">Faixa de investimento mensal</th><th scope="col">Meses</th>
+          <th scope="col">Investimento médio</th><th scope="col">ROAS</th><th scope="col">Custo/compra</th>
+          <th scope="col">CPM médio</th></tr></thead>
+        <tbody>
+          <tr><td>Até R$ 50 mil</td><td class="n">6</td><td class="n">R$ 41.843</td><td class="big">5,51</td><td class="n">R$ 33,93</td><td class="n">R$ 15,92</td></tr>
+          <tr class="hero"><td>R$ 50 mil a R$ 70 mil <b>(setembro cai aqui)</b></td><td class="n">8</td><td class="n">R$ 58.031</td><td class="big">5,69</td><td class="n">R$ 31,14</td><td class="n">R$ 12,39</td></tr>
+          <tr><td>R$ 70 mil a R$ 100 mil</td><td class="n">1</td><td class="n">R$ 77.089</td><td class="big">3,56</td><td class="n">R$ 67,44</td><td class="n">R$ 24,55</td></tr>
+          <tr><td>Acima de R$ 100 mil</td><td class="n">3</td><td class="n">R$ 113.996</td><td class="big">5,72</td><td class="n">R$ 44,39</td><td class="n">R$ 18,54</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ====== TETO DE LANCE ====== -->
+  <section>
+    <div class="sec-head"><h2>Por que não escalou, com número</h2>
+      <p>As duas campanhas de teto de lance da conta entregam ROAS alto e não conseguem gastar.</p></div>
+    <div class="tscroll">
+      <table>
+        <caption>Teto de lance recusa o leilão acima do valor definido. Custo por resultado persegue a média, então gasta o orçamento.</caption>
+        <thead><tr><th scope="col">Campanha</th><th scope="col">Estratégia</th><th scope="col">Orçamento/dia</th>
+          <th scope="col">Gasto real/dia</th><th scope="col">Uso do orçamento</th><th scope="col">ROAS</th></tr></thead>
+        <tbody>
+          <tr><td>🟠 23.07.26 GB BID CAP</td><td class="n">Bid cap</td><td class="n">R$ 1.800</td>
+            <td class="n">~R$ 336</td><td class="big" style="color:var(--crit)">19%</td><td class="n">12,10</td></tr>
+          <tr><td>🟠 21.04.26 OS BID</td><td class="n">Bid cap</td><td class="n">R$ 6.000</td>
+            <td class="n">R$ 6.300 no total</td><td class="big" style="color:var(--crit)">~2%</td><td class="n">7,21</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pull">
+      <p class="big">A correção não é abandonar a estrutura, é trocar o mecanismo de lance.</p>
+      <p style="color:var(--ink-2)">
+        O bloco 2 refaz a BID CAP com custo por resultado em R$ 35 a R$ 40. O ROAS vai cair em relação aos
+        12,10, e isso é o esperado: afrouxar o teto é trocar eficiência por volume de propósito.
+        Se sair acima de 6, a troca valeu.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== FRIO x QUENTE ====== -->
+  <section>
+    <div class="sec-head"><h2>Onde a conta ganha dinheiro</h2>
+      <p>Nível de campanha, últimos 90 dias.</p></div>
+    <div class="card">
+      <figure>
+        <div class="chart-title">Participação na verba contra ROAS entregue</div>
+        <div class="chart-box" id="box-funil"><div class="tip" id="tip-funil"></div></div>
+        <figcaption>Uma só cor: a comparação é de magnitude, não de identidade. O bloco de topo aparece com ROAS 0,05 porque fez 2 compras com R$ 7.844.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ====== DIVERGÊNCIA COM O PLANO ====== -->
+  <section>
+    <div class="sec-head"><h2>Dois pontos onde o plano de mídia diverge do histórico</h2></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:12px">Ponto 1 · a meta está baixa</div>
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="font-family:Archivo;font-size:40px;font-weight:800;color:var(--on)" class="num">42%</span>
+          <span style="color:var(--ink-2)">do que a conta entrega</span>
+        </div>
+        <p style="color:var(--ink-2);margin:10px 0 0">
+          O plano projeta ROAS 2,27x para Meta, ou R$ 147.500. Na faixa de R$ 50 a 80 mil a conta entregou
+          5,39, o que daria cerca de <b style="color:var(--ink)">R$ 350.000</b>. Ou o plano usa outra
+          definição de receita, ou o Meta está subdimensionado em cerca de R$ 200 mil no plano geral.
+        </p>
+      </div>
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:12px">Ponto 2 · o funil está invertido</div>
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="font-family:Archivo;font-size:40px;font-weight:800;color:var(--on)" class="num">6,5x</span>
+          <span style="color:var(--ink-2)">o que o quente absorve</span>
+        </div>
+        <p style="color:var(--ink-2);margin:10px 0 0">
+          O plano põe R$ 40.000 (62%) em meio e fundo. O bloco quente da conta absorveu R$ 9.222 em 90 dias,
+          cerca de R$ 3.000 por mês. Ao CPM de R$ 28,90 do remarketing histórico, R$ 20.000 num mês jogam a
+          frequência para perto de <b style="color:var(--ink)">5</b> num pool de 138 mil contas.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== PROJEÇÃO ====== -->
+  <section>
+    <div class="sec-head"><h2>O que esperar</h2></div>
+    <div class="tscroll">
+      <table>
+        <caption>Todos os três cenários ficam acima dos R$ 147.500 do plano de mídia. Receita é atribuição do Meta, não faturamento da Shopify.</caption>
+        <thead><tr><th scope="col">Cenário</th><th scope="col">Base</th><th scope="col">ROAS</th>
+          <th scope="col">Receita atribuída</th><th scope="col">Compras</th></tr></thead>
+        <tbody>
+          <tr><td>Conservador</td><td class="n">piso da faixa histórica</td><td class="big">4,0</td><td class="n">R$ 260.000</td><td class="n">~1.550</td></tr>
+          <tr class="hero"><td>Central</td><td class="n">agregado da faixa R$ 50 a 80 mil</td><td class="big">5,39</td><td class="n">R$ 350.000</td><td class="n">~1.930</td></tr>
+          <tr><td>Otimista</td><td class="n">repete julho e agosto de 2026</td><td class="big">6,0</td><td class="n">R$ 390.000</td><td class="n">~2.100</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ====== PRÉ-REQUISITOS ====== -->
+  <section>
+    <div class="sec-head"><h2>Cinco coisas antes de ligar a verba</h2>
+      <p>Nada abaixo foi executado na conta. É recomendação para aprovação.</p></div>
+    <ol class="steps">
+      <li><span class="step-n">01</span><div class="step-body">
+        <span class="step-t">Cortar o ritmo da campanha ativa</span>
+        <span class="step-d">R$ 3.170 por dia a ROAS 2,52 projeta R$ 95.000 no mês, R$ 30.000 acima da verba inteira.</span></div></li>
+      <li><span class="step-n">02</span><div class="step-body">
+        <span class="step-t">Não despausar as campanhas de julho no nível de campanha</span>
+        <span class="step-d">Quatro criativos foram vetados e rodavam dentro delas. Despausar a campanha traz os criativos vetados junto. Subir estrutura nova, ou despausar anúncio a anúncio.</span></div></li>
+      <li><span class="step-n">03</span><div class="step-body">
+        <span class="step-t">Abrir o público</span>
+        <span class="step-d">O CPM de R$ 36,37 é consequência de alcançar 277 mil contas contra 1 a 2 milhões no histórico. Sem reabrir, R$ 65.000 compram 1,79 milhão de impressões, um terço do que compravam em fevereiro.</span></div></li>
+      <li><span class="step-n">04</span><div class="step-body">
+        <span class="step-t">Consertar o catálogo</span>
+        <span class="step-d">Carrossel e collection são os formatos de maior ROAS da conta e dependem dele. Onze campanhas acusam produto apagado.</span></div></li>
+      <li><span class="step-n">05</span><div class="step-body">
+        <span class="step-t">Produzir criativo novo</span>
+        <span class="step-d">Quatro peças vetadas e CPM em máxima histórica são dois problemas com a mesma resposta. É o que o bloco 4 financia.</span></div></li>
+    </ol>
+  </section>
+
+  <!-- ====== LIMITAÇÕES ====== -->
+  <section>
+    <div class="sec-head"><h2>O que este plano não prova</h2></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">
+      <div><b>Não consegui mapear os quatro criativos vetados para IDs de anúncio.</b>
+        <span style="color:var(--ink-2)">A ferramenta de criativos respondeu HTTP 502 em três tentativas. Por dedução, e não por verificação, os vencedores em vídeo não estão entre as peças vetadas, porque as quatro são imagens estáticas de oferta. Confirmar no Ads Manager antes de subir.</span></div>
+      <hr class="rule">
+      <div><b>A faixa histórica não é garantia.</b>
+        <span style="color:var(--ink-2)">O CPM de hoje é o dobro do que era na maior parte dos meses que sustentam o ROAS 5,39. O cenário central assume que abrir o público derruba o CPM para a faixa de R$ 20 a R$ 25. Se ficar em R$ 36, o conservador vira o provável.</span></div>
+      <hr class="rule">
+      <div><b>Receita é atribuição do Meta, não faturamento da Shopify.</b>
+        <span style="color:var(--ink-2)">O conector Shopify segue com token expirado. A janela de atribuição também continua não confirmada no Ads Manager.</span></div>
+      <hr class="rule">
+      <div><b>A conta Konjac Massa MF Awareness segue fora da leitura</b>
+        <span style="color:var(--ink-2)">por <code style="font-family:'IBM Plex Mono',monospace;font-size:12px">is_ads_mcp_enabled: false</code> no conector.</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <hr class="rule" style="margin-bottom:8px">
+    <div><b>Fonte:</b> Meta Ads, conta 3051443881648697 (Konjac Massa MF - Performance - Agências), via conector MCP, em 01.09.2026. Moeda BRL.</div>
+    <div><b>Janelas:</b> histórico mensal completo da conta, 18 meses tabulados, mais os cortes de 90 dias por campanha, conjunto e anúncio. <b>Fuso:</b> o da conta de anúncios, pendente de confirmação.</div>
+    <div><b>Identidade visual pendente:</b> a paleta da marca ainda não foi definida, então este painel usa cores analíticas neutras validadas para daltonismo. Não é peça final de cliente.</div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var N2=function(v){return v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});};
+  var P1=function(v){return v.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1});};
+  var K =function(v){return "R$ "+Math.round(v).toLocaleString("pt-BR");};
+  var css=function(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();};
+  var NS="http://www.w3.org/2000/svg";
+  function el(t,a){var e=document.createElementNS(NS,t);for(var k in a){if(a[k]!==null&&a[k]!==undefined)e.setAttribute(k,a[k]);}return e;}
+  function txt(e,s){e.textContent=s;return e;}
+
+  /* ---------- 1. a divisão ---------- */
+  var SPLIT=[
+    {n:"1 · Frio e aberto de escala", v:40000, c:"--r1"},
+    {n:"2 · Herdeiro da BID CAP",     v:12000, c:"--r2"},
+    {n:"3 · Quente e recuperação",    v: 8000, c:"--r3"},
+    {n:"4 · Teste de criativo",       v: 5000, c:"--r4"}
+  ];
+  function splitChart(){
+    var box=document.getElementById("box-split"), tip=document.getElementById("tip-split");
+    var W=box.clientWidth||820, narrow=W<560;
+    var barH=narrow?34:44, H=barH+ (narrow? 118 : 76);
+    var total=65000, x0=0, iw=W;
+    box.querySelectorAll("svg").forEach(function(s){s.remove();});
+    var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":
+      "Divisão dos 65 mil reais: 40 mil em frio de escala, 12 mil no herdeiro da BID CAP, 8 mil em quente e 5 mil em teste de criativo."});
+    var cur=x0;
+    SPLIT.forEach(function(d,i){
+      var w=(d.v/total)*iw;
+      var seg=el("rect",{x:cur,y:0,width:Math.max(2,w-2),height:barH,fill:css(d.c),rx:3});
+      svg.appendChild(seg);
+      /* valor dentro do segmento quando couber */
+      if(w>70){
+        var t=el("text",{x:cur+10,y:barH/2+5,fill:"#FFFFFF","font-size":12.5,"font-weight":700,
+          "font-family":"Archivo, sans-serif","font-variant-numeric":"tabular-nums"});
+        svg.appendChild(txt(t,K(d.v)));
+      }
+      var hit=el("rect",{x:cur,y:0,width:Math.max(2,w-2),height:barH,fill:"transparent"});
+      (function(d,cur,w){
+        hit.addEventListener("mousemove",function(ev){
+          var r=svg.getBoundingClientRect();
+          tip.innerHTML="<b>"+d.n+"</b><br>"+K(d.v)+" · "+P1(d.v/total*100)+"% da verba<br>"+
+            "R$ "+Math.round(d.v/30).toLocaleString("pt-BR")+" por dia";
+          tip.style.opacity=1;
+          var left=(ev.clientX-r.left)+14; if(left>r.width-200) left=left-210;
+          tip.style.left=left+"px"; tip.style.top=(barH/H*r.height+8)+"px";
+        });
+        hit.addEventListener("mouseleave",function(){tip.style.opacity=0;});
+      })(d,cur,w);
+      svg.appendChild(hit);
+      cur+=w;
+    });
+    /* legenda abaixo */
+    var lx=0, ly=barH+26, colW=narrow? W : W/4;
+    SPLIT.forEach(function(d,i){
+      var cx = narrow ? 0 : i*colW;
+      var cy = narrow ? ly + i*26 : ly;
+      svg.appendChild(el("rect",{x:cx,y:cy-9,width:10,height:10,fill:css(d.c),rx:2}));
+      var t=el("text",{x:cx+16,y:cy,fill:css("--ink-2"),"font-size":12.5,"font-family":"IBM Plex Sans, sans-serif"});
+      svg.appendChild(txt(t, d.n+"  "+P1(d.v/total*100)+"%"));
+    });
+    box.appendChild(svg);
+  }
+
+  /* ---------- 2. histórico mensal, três painéis com o mesmo eixo x ---------- */
+  var M=[
+   ["03/25",54096,6.50,11.94],["04/25",64517,5.40,12.60],["05/25",55148,4.51,12.22],["06/25",60734,5.12,11.88],
+   ["07/25",57151,5.86,12.79],["08/25",46314,6.38,13.45],["09/25",51585,5.19,11.77],["10/25",43826,4.43,11.86],
+   ["11/25",53645,7.07,14.39],["12/25",43820,5.59,11.30],["01/26",47010,5.04, 8.93],["02/26",67373,5.96,11.67],
+   ["03/26",100312,6.72,14.94],["04/26",112028,5.97,15.65],["05/26",129648,4.74,23.83],["06/26",77089,3.56,24.55],
+   ["07/26",39593,5.47,20.94],["08/26",30494,6.38,36.37]
+  ];
+  function histChart(){
+    var box=document.getElementById("box-hist"), tip=document.getElementById("tip-hist");
+    var W=box.clientWidth||820, narrow=W<600;
+    var m={t:26,r:12,b:26,l:narrow?38:52};
+    var ph=narrow?78:96, gapP=narrow?30:34;
+    var H=m.t + ph*3 + gapP*2 + m.b;
+    var iw=W-m.l-m.r, n=M.length;
+    var slot=iw/n, bw=Math.min(narrow?12:22, slot*0.62);
+    var cx=function(i){return m.l + slot*i + slot/2;};
+    box.querySelectorAll("svg").forEach(function(s){s.remove();});
+    var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":
+      "Três painéis por mês: investimento entre 30 e 130 mil reais, ROAS entre 3,56 e 7,07, e CPM subindo de 9 para 36 reais."});
+
+    function panel(idx,label,vals,maxV,kind,color,refV,refLbl){
+      var top=m.t+idx*(ph+gapP);
+      var y=function(v){return top+ph-(v/maxV)*ph;};
+      var lt=el("text",{x:m.l,y:top-9,fill:css("--ink-2"),"font-size":12,"font-weight":600,
+        "font-family":"IBM Plex Sans, sans-serif"}); svg.appendChild(txt(lt,label));
+      [0,maxV/2,maxV].forEach(function(v){
+        svg.appendChild(el("line",{x1:m.l,x2:m.l+iw,y1:y(v),y2:y(v),stroke:css("--grid"),"stroke-width":1}));
+        var t=el("text",{x:m.l-8,y:y(v)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,
+          "font-family":"IBM Plex Mono, monospace"});
+        svg.appendChild(txt(t, kind==="money"? Math.round(v/1000)+"k" : N2(v).replace(",00","")));
+      });
+      if(refV){
+        svg.appendChild(el("line",{x1:m.l,x2:m.l+iw,y1:y(refV),y2:y(refV),stroke:css("--on"),
+          "stroke-width":2,"stroke-dasharray":"5 4"}));
+        var rt=el("text",{x:m.l+iw,y:y(refV)-7,"text-anchor":"end",fill:css("--on"),"font-size":11,
+          "font-weight":600,"font-family":"IBM Plex Sans, sans-serif"});
+        svg.appendChild(txt(rt,refLbl));
+      }
+      if(kind==="money"){
+        vals.forEach(function(v,i){
+          svg.appendChild(el("rect",{x:cx(i)-bw/2,y:y(v),width:bw,height:Math.max(1,top+ph-y(v)),
+            fill:color,rx:3,stroke:css("--card"),"stroke-width":2}));
+        });
+      }else{
+        var d="";
+        vals.forEach(function(v,i){ d+=(i?" L":"M")+cx(i)+","+y(v); });
+        svg.appendChild(el("path",{d:d,fill:"none",stroke:color,"stroke-width":2,
+          "stroke-linejoin":"round","stroke-linecap":"round"}));
+        vals.forEach(function(v,i){
+          svg.appendChild(el("circle",{cx:cx(i),cy:y(v),r:3,fill:color,stroke:css("--card"),"stroke-width":1.5}));
+        });
+      }
+      return y;
+    }
+
+    panel(0,"Investimento no mês", M.map(function(r){return r[1];}), 135000,"money",css("--r2"),65000,"R$ 65 mil de setembro");
+    panel(1,"ROAS de plataforma",  M.map(function(r){return r[2];}), 8,"num",css("--off"),null,null);
+    panel(2,"CPM",                 M.map(function(r){return r[3];}), 40,"num",css("--crit"),null,null);
+
+    /* eixo x compartilhado */
+    M.forEach(function(r,i){
+      if(narrow && i%3!==0 && i!==n-1) return;
+      var t=el("text",{x:cx(i),y:H-8,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,
+        "font-family":"IBM Plex Mono, monospace"});
+      svg.appendChild(txt(t,r[0]));
+    });
+
+    /* hover: uma coluna cobrindo os três painéis */
+    var band=el("rect",{y:m.t-6,width:slot,height:H-m.t-m.b+6,fill:css("--ink-3"),opacity:0});
+    svg.appendChild(band);
+    var hit=el("rect",{x:m.l,y:m.t-6,width:iw,height:H-m.t-m.b+6,fill:"transparent"});
+    hit.addEventListener("mousemove",function(ev){
+      var r=svg.getBoundingClientRect();
+      var px=(ev.clientX-r.left)*(W/r.width);
+      var i=Math.max(0,Math.min(n-1,Math.floor((px-m.l)/slot)));
+      var d=M[i];
+      band.setAttribute("x",m.l+slot*i); band.setAttribute("opacity",.09);
+      tip.innerHTML="<b>"+d[0]+"</b><br>"+K(d[1])+"<br>ROAS "+N2(d[2])+"<br>CPM R$ "+N2(d[3]);
+      tip.style.opacity=1;
+      var left=(cx(i)/W)*r.width+14; if(left>r.width-150) left=left-165;
+      tip.style.left=left+"px"; tip.style.top="6px";
+    });
+    hit.addEventListener("mouseleave",function(){band.setAttribute("opacity",0);tip.style.opacity=0;});
+    svg.appendChild(hit);
+    box.appendChild(svg);
+  }
+
+  /* ---------- 3. frio x quente ---------- */
+  var FUNIL=[
+    {n:"Frio / aberto",              sp:110887, pct:83.3, roas:5.28},
+    {n:"Quente / remarketing",       sp:  9222, pct: 6.9, roas:4.20},
+    {n:"Topo (tráfego/engajamento)", sp:  7844, pct: 5.9, roas:0.05},
+    {n:"Lookalike",                  sp:  1800, pct: 1.4, roas:3.90}
+  ];
+  function funilChart(){
+    var box=document.getElementById("box-funil"), tip=document.getElementById("tip-funil");
+    var W=box.clientWidth||820, narrow=W<560;
+    var rowH=narrow?58:46, gap=narrow?14:10;
+    var m={t:6,r:60,b:6,l:narrow?0:Math.min(230,Math.max(160,W*0.28))};
+    var H=FUNIL.length*rowH+(FUNIL.length-1)*gap+m.t+m.b;
+    var iw=W-m.l-m.r, maxP=90, barH=narrow?20:rowH-18;
+    box.querySelectorAll("svg").forEach(function(s){s.remove();});
+    var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":
+      "Participação na verba por bloco: frio 83,3%, quente 6,9%, topo 5,9%, lookalike 1,4%."});
+    FUNIL.forEach(function(d,i){
+      var yTop=m.t+i*(rowH+gap), barY=narrow?yTop+24:yTop+(rowH-barH)/2;
+      var bw=Math.max(2,(d.pct/maxP)*iw);
+      var nm=el("text",{x:narrow?0:m.l-12,y:narrow?yTop+13:yTop+rowH/2+5,
+        "text-anchor":narrow?"start":"end",fill:css("--ink"),"font-size":narrow?12.5:13,
+        "font-family":"IBM Plex Sans, sans-serif"});
+      svg.appendChild(txt(nm,d.n));
+      svg.appendChild(el("rect",{x:m.l,y:barY,width:iw,height:barH,fill:css("--grid"),opacity:.35,rx:2}));
+      svg.appendChild(el("rect",{x:m.l,y:barY,width:bw,height:barH,fill:css("--r2"),rx:4,
+        stroke:css("--card"),"stroke-width":2}));
+      var vt=el("text",{x:m.l+bw+10,y:barY+barH/2+5,fill:css("--ink"),"font-size":13.5,"font-weight":700,
+        "font-family":"Archivo, sans-serif","font-variant-numeric":"tabular-nums"});
+      svg.appendChild(txt(vt,P1(d.pct)+"%"));
+      var hit=el("rect",{x:0,y:yTop,width:W,height:rowH,fill:"transparent"});
+      (function(d,yTop){
+        hit.addEventListener("mousemove",function(ev){
+          var r=svg.getBoundingClientRect();
+          tip.innerHTML="<b>"+d.n+"</b><br>"+K(d.sp)+" · "+P1(d.pct)+"% da verba<br>ROAS "+N2(d.roas);
+          tip.style.opacity=1;
+          var left=(ev.clientX-r.left)+14; if(left>r.width-190) left=left-200;
+          tip.style.left=left+"px"; tip.style.top=((yTop+rowH)/H)*r.height+"px";
+        });
+        hit.addEventListener("mouseleave",function(){tip.style.opacity=0;});
+      })(d,yTop);
+      svg.appendChild(hit);
+    });
+    box.appendChild(svg);
+  }
+
+  function drawAll(){ splitChart(); histChart(); funilChart(); }
+  drawAll();
+  var t; window.addEventListener("resize",function(){clearTimeout(t);t=setTimeout(drawAll,160);});
+  if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawAll);
+  new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+})();
+</script>

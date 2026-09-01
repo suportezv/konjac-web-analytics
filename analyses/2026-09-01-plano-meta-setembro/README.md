@@ -26,6 +26,8 @@ próprio orçamento.
 - **Atribuição:** padrão da conta, ainda não confirmada no Ads Manager.
 - **Definições:** `FRAMEWORK.md`. ROAS é de plataforma. CPA aqui é custo por compra.
 - **Recorte:** `agregado_mensal_conta.csv`.
+- **Painel:** fonte em `dashboards/2026-09-01-plano-meta-setembro/painel.html`,
+  publicado em https://claude.ai/code/artifact/8173d587-3099-46d6-ac27-2fb905f75601
 
 ---
 

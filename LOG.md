@@ -36,6 +36,8 @@ Formato de cada entrada:
   subdimensiona o Meta em cerca de R$ 200 mil.
 - **Entrega**: `analyses/2026-09-01-plano-meta-setembro/` com achado, método,
   divisão, projeção em três cenários, cinco pré-requisitos e limitações.
+  Painel em `dashboards/2026-09-01-plano-meta-setembro/painel.html`, publicado
+  como artifact: https://claude.ai/code/artifact/8173d587-3099-46d6-ac27-2fb905f75601
 
 ## 2026-08-31  Meta Ads: o que vale religar
 
