@@ -17,6 +17,25 @@ Formato de cada entrada:
 
 ---
 
+## 2026-09-01  Dá para simplificar o tracking com os apps oficiais?
+
+- **Quem pediu**: suporte@zavi.ag
+- **Pergunta de negócio**: o server side atual está caindo. Dá para trocar a estrutura
+  pesada de GTM web mais server pelos apps oficiais de Meta e Google na Shopify,
+  deixando só um GTM Web básico?
+- **Consultado**: Meta Ads, dataset `233969141719482` e catálogo `319564296740282`,
+  via `ads_get_dataset_details`, `ads_get_dataset_quality`, `ads_get_dataset_stats`
+  (por `event_source`, 25.08 a 01.09) e `ads_catalog_list_partner_integrations`.
+- **Resposta em uma frase**: do lado da Meta sim, e já é assim hoje, porque o app
+  oficial da Shopify está conectado, o gateway da Meta está desligado e mesmo assim
+  47,9% dos eventos chegam por servidor com Purchase a EMQ 9,3, o que significa que
+  derrubar o server side não derruba a CAPI; do lado do Google nada pôde ser
+  verificado, e é urgente conferir antes de desligar, porque metade da verba do plano
+  depende dessa medição.
+- **Entrega**: `analyses/2026-09-01-simplificar-tracking/` com a prova, a arquitetura
+  proposta, o que se perde ao simplificar, quatro achados laterais e as limitações.
+  `CLAUDE.md` ganha o pixel, o catálogo, a integração e o domínio `.myshopify`.
+
 ## 2026-09-01  Divisão dos R$ 65 mil de Meta em setembro
 
 - **Quem pediu**: suporte@zavi.ag

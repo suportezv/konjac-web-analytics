@@ -36,14 +36,27 @@ existe para o resto da equipe.
 Nada aqui foi confirmado ainda. Cada item só sai de PENDENTE depois de a fonte
 responder de verdade, na própria sessão que o preencher.
 
-- **Loja Shopify**: domínio público `konjacmassamf.com.br`. Domínio `.myshopify.com`,
-  fuso e moeda: **PENDENTE** (`get-shop-info`).
+- **Loja Shopify**: domínio público `konjacmassamf.com.br`. Domínio `.myshopify.com`:
+  **`konjac-massas-mf.myshopify.com`**, confirmado em 2026-09-01 pelo `store_id` da
+  integração Shopify no catálogo da Meta (`ads_catalog_list_partner_integrations`),
+  ainda não confirmado pelo próprio conector Shopify. Fuso e moeda: **PENDENTE**
+  (`get-shop-info`).
   A conta da agência tem mais de uma loja: **sempre confirme com `get-shop-info`
   antes de consultar** e use `switch-shop` se vier a loja errada.
 - **Propriedade GA4**: **PENDENTE** (só dígitos, sem o prefixo `properties/`).
   Stream de dados da loja e ID de medição: **PENDENTE**.
 - **Google Ads**: MCC (`login_customer_id`) e conta do cliente (`customer_id`),
   ambos sem hífens: **PENDENTE**. Moeda e fuso da conta: **PENDENTE**.
+- **Pixel e catálogo da Meta** (confirmados em 2026-09-01):
+  - Pixel vivo: **`233969141719482`** ("Pixel de Konjac Massa MF", criado em 2021).
+    `first_party_cookie_enabled`, `data_use_setting: advertising_and_analytics`.
+    **Conversions API Gateway da Meta: `NOT_ONBOARDED`**, não é por ali que entram os
+    eventos de servidor.
+  - Pixel **morto**: `914833979004725`, último disparo em 02.09.2020 e ainda marcado
+    `is_active: true`. **Nunca plugue campanha nele.**
+  - Catálogo: **`319564296740282`** "Konjac Massa MF - Shopify Product Catalog".
+  - Integração Shopify do catálogo: `343139824323905`, `connected`, sincronização a
+    cada ~2h, sem webhooks registrados.
 - **Meta Ads**: a Konjac tem **três** contas no business `392689994582822`.
   Confirmadas em 2026-08-31:
   - `3051443881648697` **Konjac Massa MF - Performance - Agências**: a conta
@@ -200,6 +213,23 @@ siga; se algum deixar de valer, corrija aqui e commite.
   Workspace, impersonando um usuário. Por isso o contrato de env vars do Ads pede
   `CLIENT_ID`, `CLIENT_SECRET` e `REFRESH_TOKEN`, e não a chave JSON.
 - **BigQuery e GA4 aceitam service account direto**, sem impersonação.
+
+### Instrumentação e CAPI
+
+- **A CAPI da Meta já roda pelo app oficial da Shopify, não por server side próprio.**
+  Verificado em 2026-09-01: 47,9% dos eventos de uma semana chegaram por servidor,
+  Purchase com EMQ **9,3** e `fn`, `ln`, `ct`, `st`, `zip` e `country` em 100%, que só
+  o objeto de pedido produz. **Derrubar o GTM server side não derruba a CAPI da Meta.**
+- **EMQ de topo de funil é baixo por natureza, não por falha.** PageView e ViewContent
+  ficam em 6,4 porque o visitante ainda não se identificou. Server side não conserta
+  isso; captura de e-mail antes da compra conserta.
+- **`fbc` em 80,9% no Purchase.** 19% das compras chegam sem identificador de clique.
+  A causa está no caminho do clique (encurtador que corta query string, redirect que
+  perde `fbclid`, app de consentimento bloqueando `_fbc`), não no envio.
+- **Não confie em ROAS sem antes checar deduplicação.** Se navegador e servidor não
+  deduplicam por `event_id`, a compra conta duas vezes e todo ROAS fica inflado.
+  Ainda **não verificado** nesta conta: exige o Events Manager ou o cruzamento com
+  pedidos da Shopify.
 
 ### Fuso e datas
 
