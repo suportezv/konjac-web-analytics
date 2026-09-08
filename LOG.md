@@ -17,6 +17,26 @@ Formato de cada entrada:
 
 ---
 
+## 2026-09-08  Conectar o Google Ads, e o PMax visto pela Shopify
+
+- **Quem pediu**: suporte@zavi.ag
+- **Pergunta de negócio**: por que o PMax está com ROAS péssimo e taxa de conversão
+  em queda? E o que é preciso para conectar o Google Ads, passo a passo?
+- **Consultado**: ambiente (env vars, proxy), diretório de conectores do claude.ai,
+  e o conector Elos Link, novo nesta sessão: `shopify_admin_query` (loja confirmada:
+  Konjac Massa®, America/Sao_Paulo, BRL) e `origem_das_vendas` em 7, 30 e 90 dias
+  até 2026-09-08, atribuição de último clique da Shopify.
+- **Resposta em uma frase**: não existe conexão de Google Ads por nenhum caminho, então
+  a pergunta do PMax não tem número; mas a Shopify mostra os pedidos de último clique
+  do PMax subindo de 2,4 para 3,1 por dia, o que torna "a medição quebrou junto com o
+  server side" a hipótese mais forte para a queda vista no Google, com um teste de
+  dois minutos para confirmar; o guia de conexão tem três caminhos e um script pronto
+  para o refresh token.
+- **Entrega**: `analyses/2026-09-08-conectar-google-ads/` e
+  `scripts/gerar_refresh_token_google_ads.py`. `CLAUDE.md` ganha a loja confirmada,
+  a seção do conector Elos Link com o aviso sobre ferramentas de escrita, a higiene
+  de UTM e os caminhos de conexão do Google Ads.
+
 ## 2026-09-01  Dá para simplificar o tracking com os apps oficiais?
 
 - **Quem pediu**: suporte@zavi.ag
