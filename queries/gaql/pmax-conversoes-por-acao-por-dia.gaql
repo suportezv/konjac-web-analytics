@@ -1,0 +1,24 @@
+-- Pergunta: no PMax, quantas conversões por dia vieram de CADA ação de conversão?
+--           Se uma ação sumir a partir de uma data (degrau), essa é a data em que a
+--           medição quebrou, e explica queda de CVR e ROAS sem queda de pedidos na
+--           Shopify.
+-- Fonte: Google Ads API, recurso `campaign` segmentado por ação de conversão, via
+--        servidor MCP oficial
+-- Granularidade: uma linha por campanha por dia por ação de conversão
+-- Janela: LAST_30_DAYS (fuso da conta de Google Ads)
+-- Fuso: o da conta Google Ads
+-- Definições: FRAMEWORK.md. Cruzar com os pedidos de último clique da Shopify
+--             atribuídos a `pmaxsemrecurso` (origem_das_vendas, Elos Link).
+-- Validada: NÃO VALIDADA (sem conexão de Google Ads em 2026-09-08)
+
+SELECT
+  campaign.name,
+  segments.date,
+  segments.conversion_action_name,
+  segments.conversion_action_category,
+  metrics.conversions,
+  metrics.conversions_value
+FROM campaign
+WHERE campaign.advertising_channel_type = 'PERFORMANCE_MAX'
+  AND segments.date DURING LAST_30_DAYS
+ORDER BY segments.date, segments.conversion_action_name

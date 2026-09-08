@@ -36,3 +36,12 @@ ambiente, no formato `${VARIAVEL}`, e o runner resolve:
 
 As consultas ShopifyQL rodam pelo conector MCP da Shopify (`run-analytics-query`),
 dentro da sessão do Claude. O arquivo aqui é a fonte da verdade do texto da query.
+
+## GAQL (Google Ads)
+
+As consultas em `queries/gaql/` rodam pelo **servidor MCP oficial do Google Ads**
+(`.mcp.json` na raiz), ferramenta `search`, passando o `customer_id` da conta da
+Konjac. Enquanto a conexão não existir, ficam todas marcadas `NÃO VALIDADA`.
+Custo vem em micros (`cost_micros` / 1.000.000) e a data segue o fuso da conta de
+Google Ads, não necessariamente America/Sao_Paulo.
+

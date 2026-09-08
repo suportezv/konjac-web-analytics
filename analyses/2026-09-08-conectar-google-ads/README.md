@@ -93,10 +93,12 @@ No Google Ads, entrar na **conta de administrador (MCC) da agência** > Ferramen
 configurações > Configuração > **Central de API**. Lá aparece o developer token e o
 **nível de acesso**.
 
-- Se estiver em **Acesso básico** ou superior: caminho A resolve hoje.
-- Se estiver em **Conta de teste** ou não existir: pedir o acesso básico ali mesmo
-  (o Google revisa em alguns dias úteis) **e** começar o caminho B em paralelo, que
-  não depende de token.
+- Se estiver em **Explorer**, **Básico** ou superior: os caminhos A e A-MCP resolvem
+  hoje. O README oficial do servidor MCP diz que **Explorer já basta** para consultar
+  conta de produção, e que tokens novos podem subir para Explorer sozinhos.
+- Se estiver em **Conta de teste** ou não existir: pedir o acesso ali mesmo (o Google
+  revisa em alguns dias úteis) **e** começar o caminho B em paralelo, que não depende
+  de token.
 
 ### Caminho A: Google Ads API direta (o que o repo já está preparado para usar)
 
@@ -147,6 +149,78 @@ conectado, está configurado.
 
 Nenhuma credencial passa pelo chat, em nenhum passo.
 
+### Caminho A-MCP: o servidor MCP oficial do Google (`googleads/google-ads-mcp`)
+
+Lido no código em 2026-09-08. É um servidor Python com três ferramentas (`search`
+em GAQL, `get_resource_metadata`, `list_accessible_customers`) que autentica por
+**Application Default Credentials** com escopo `adwords`, lê o developer token de
+`GOOGLE_ADS_DEVELOPER_TOKEN` e o MCC de `GOOGLE_ADS_LOGIN_CUSTOMER_ID`. Por padrão
+fala **stdio**; vira **HTTP com OAuth** se receber `GOOGLE_ADS_MCP_OAUTH_CLIENT_ID`
+e `_SECRET`. **Instala, sobe e responde ao handshake MCP dentro deste container**
+(testado). A credencial só é lida na primeira chamada de ferramenta.
+
+**As credenciais são as mesmas do caminho A.** Nenhum segredo a mais. A diferença é
+que as consultas passam a ser ferramentas na sessão, como o Meta Ads MCP hoje.
+
+Há dois modos de ligar, e o repo já está preparado para o primeiro.
+
+#### Modo 1: dentro do Claude Code na web, pelo `.mcp.json` do repo (pronto)
+
+O que já está commitado:
+
+- `.mcp.json` na raiz apontando para `.venv/bin/google-ads-mcp`, com o developer
+  token e o MCC vindos do environment por `${VAR}` (nada de segredo no arquivo).
+- `scripts/setup.sh` instala o servidor no venv e, a partir de `GOOGLE_ADS_CLIENT_ID`,
+  `CLIENT_SECRET` e `REFRESH_TOKEN`, grava a credencial no formato que o servidor lê
+  (`authorized_user`), no caminho padrão onde `google.auth.default` procura.
+- `scripts/validate.sh` item 2c prova que o servidor sobe; o item 6 prova o acesso.
+- `queries/gaql/` com as três primeiras consultas do diagnóstico do PMax.
+
+O que falta, e é só isto:
+
+| # | Passo | Quem |
+|---|---|---|
+| 1 | Developer token do MCC com nível **Explorer** ou superior (passo 0) | quem administra o MCC |
+| 2 | App OAuth **tipo Desktop** no Google Cloud, com a Google Ads API ativada no projeto | quem tem o Cloud |
+| 3 | Refresh token, rodando **na própria máquina** `python scripts/gerar_refresh_token_google_ads.py --client-id ... --client-secret ...` (ou `gcloud auth application-default login --scopes=https://www.googleapis.com/auth/adwords --client-id-file=<json do app>`) | quem tem acesso à conta da Konjac |
+| 4 | Environment do Claude Code: as seis variáveis `GOOGLE_ADS_*` (tabela do caminho A) e rede Custom com `googleads.googleapis.com`, `oauth2.googleapis.com`, `accounts.google.com` | você |
+| 5 | **Sessão nova.** Ao abrir, o Claude Code pede para aprovar o servidor do `.mcp.json`; aprovar. As ferramentas `search` e `list_accessible_customers` aparecem. | você |
+| 6 | `bash scripts/validate.sh`: itens 2c e 6 têm que dar OK | eu, na sessão nova |
+
+Ponto de atenção: o servidor faz uma chamada a `pypi.org` ao subir (checagem de
+versão do FastMCP). Funciona aqui porque `pypi.org` está no `NO_PROXY`.
+
+#### Modo 2: hospedado no Cloud Run, ligado como conector no claude.ai (para o time)
+
+É o modo que faz o Google Ads aparecer para **qualquer pessoa da agência**, em
+qualquer sessão, sem mexer no environment, com login individual. Igual ao Meta Ads
+MCP. Custa um serviço no Cloud Run.
+
+1. Projeto no Google Cloud com Google Ads API, Cloud Run, Cloud Build, Artifact
+   Registry e **Firestore** ativados (o Firestore guarda os tokens OAuth dos usuários
+   entre instâncias; sem ele, cada reinício derruba o login).
+2. App OAuth **tipo Web** no mesmo projeto. O redirect URI é o do servidor: a URL do
+   Cloud Run mais o caminho de callback do FastMCP (confira no log do primeiro deploy
+   e cadastre no app OAuth).
+3. Build e deploy conforme o README do repo (`gcloud builds submit`, depois
+   `gcloud run deploy` com `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_MCP_OAUTH_CLIENT_ID`,
+   `GOOGLE_ADS_MCP_OAUTH_CLIENT_SECRET`, `GOOGLE_ADS_MCP_BASE_URL`,
+   `GOOGLE_ADS_MCP_JWT_SIGNING_KEY`, `GOOGLE_ADS_MCP_STORAGE_TYPE=firestore`,
+   `FASTMCP_HOST=0.0.0.0` e, se o acesso for por MCC, `GOOGLE_ADS_LOGIN_CUSTOMER_ID`).
+   O README pede `--allow-unauthenticated` no Cloud Run porque a autenticação é feita
+   pelo próprio servidor, na camada OAuth.
+4. Na primeira subida a URL ainda não existe; depois do deploy, atualizar
+   `GOOGLE_ADS_MCP_BASE_URL` com a URL do Cloud Run e cadastrar o redirect no app OAuth.
+5. No claude.ai: Configurações > Conectores > adicionar conector customizado com
+   `https://<url-do-cloud-run>/mcp` > autorizar com a conta Google que tem acesso ao
+   Google Ads > habilitar no chat.
+6. A conta de serviço do Cloud Run precisa de `roles/datastore.user` para o Firestore.
+   O README avisa que entradas expiradas não são apagadas sozinhas; prever limpeza.
+
+**Segurança:** o developer token fica no servidor; cada usuário vê só as contas às
+quais a própria conta Google tem acesso. Quem não tem acesso ao Google Ads da Konjac
+não enxerga nada por esse conector.
+
 ### Caminho B: Google Ads para o BigQuery (durável, cobre GA4 também, sem developer token)
 
 É o que a arquitetura da célula sempre previu: BigQuery como base consolidada.
@@ -188,9 +262,11 @@ conector, fecha com a atribuição da Shopify que já vem por ali. Vale uma perg
 
 ### Recomendação
 
-**Passo 0 hoje.** Com token aprovado: **A** agora, e **B** em seguida porque a célula
-vai precisar do BigQuery de qualquer jeito. Sem token aprovado: pedir o acesso hoje
-e fazer **B** como caminho principal. **C** só se a decisão for zero engenharia.
+**Passo 0 hoje.** Com token em Explorer ou acima: **A-MCP Modo 1** agora, porque o
+repo já está pronto e são as mesmas credenciais do caminho A; ele responde a
+pergunta do PMax na primeira sessão nova. Depois, **A-MCP Modo 2** para o time e
+**B** para o histórico consolidado com GA4. Sem token: pedir o acesso hoje e fazer
+**B** enquanto espera. **C** só se a decisão for zero engenharia.
 
 ---
 
@@ -213,6 +289,11 @@ e fazer **B** como caminho principal. **C** só se a decisão for zero engenhari
 
 ## Limitação
 
+- **O `.mcp.json` foi testado até o handshake, não até a ferramenta.** Sem
+  credencial e sem rede não dá para ir além. Duas coisas ficam para a sessão nova:
+  se o Claude Code na web carrega servidor de projeto do `.mcp.json` sem ajuste, e
+  se o processo sobe com o repo como diretório de trabalho (o caminho
+  `.venv/bin/google-ads-mcp` é relativo a isso).
 - **Não há número de Google Ads nesta análise.** Nada de custo, clique, impressão,
   CVR ou ROAS do Google. Tudo sobre o PMax aqui é o que a Shopify atribui por último
   clique, e último clique subestima campanhas de topo como o PMax.

@@ -1,0 +1,24 @@
+-- Pergunta: quais ações de conversão estão ativas na conta, qual é a principal, de
+--           onde cada uma vem (tag do site, app da Shopify, importação) e qual entra
+--           na coluna Conversões? É a checagem de medição: se a conversão principal
+--           vinha do server side que saiu do ar, é aqui que aparece.
+-- Fonte: Google Ads API, recurso `conversion_action`, via servidor MCP oficial
+-- Granularidade: uma linha por ação de conversão
+-- Janela: não se aplica (configuração)
+-- Fuso: não se aplica
+-- Definições: nenhuma; consulta de instrumentação
+-- Validada: NÃO VALIDADA (sem conexão de Google Ads em 2026-09-08)
+
+SELECT
+  conversion_action.id,
+  conversion_action.name,
+  conversion_action.type,
+  conversion_action.category,
+  conversion_action.origin,
+  conversion_action.status,
+  conversion_action.primary_for_goal,
+  conversion_action.include_in_conversions_metric,
+  conversion_action.attribution_model_settings.attribution_model,
+  conversion_action.click_through_lookback_window_days
+FROM conversion_action
+WHERE conversion_action.status = 'ENABLED'

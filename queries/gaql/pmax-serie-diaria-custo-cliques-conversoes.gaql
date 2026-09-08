@@ -1,0 +1,28 @@
+-- Pergunta: como o PMax se comportou dia a dia nos últimos 30 dias: custo, cliques,
+--           conversões e valor? Onde a taxa de conversão (conv/cliques) e o ROAS
+--           (valor/custo) começaram a cair?
+-- Fonte: Google Ads API, recurso `campaign`, via servidor MCP oficial (ferramenta
+--        `search`, com `customer_id` da conta da Konjac)
+-- Granularidade: uma linha por campanha por dia
+-- Janela: LAST_30_DAYS (fuso da conta de Google Ads; confirmar no inventário)
+-- Fuso: o da conta Google Ads, não necessariamente America/Sao_Paulo
+-- Definições: FRAMEWORK.md. `conversions` e `conversions_value` seguem a ação de
+--             conversão principal e a janela configurada na conta. custo vem em
+--             micros: dividir cost_micros por 1.000.000.
+-- Validada: NÃO VALIDADA (sem conexão de Google Ads em 2026-09-08)
+
+SELECT
+  campaign.id,
+  campaign.name,
+  campaign.advertising_channel_type,
+  segments.date,
+  metrics.cost_micros,
+  metrics.impressions,
+  metrics.clicks,
+  metrics.conversions,
+  metrics.conversions_value,
+  metrics.all_conversions
+FROM campaign
+WHERE campaign.advertising_channel_type = 'PERFORMANCE_MAX'
+  AND segments.date DURING LAST_30_DAYS
+ORDER BY segments.date

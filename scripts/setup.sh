@@ -23,14 +23,14 @@ ok()   { printf '  OK       %s\n' "$1"; }
 pend() { printf '  PENDENTE %s\n' "$1"; }
 fail() { printf '  FALHOU   %s\n' "$1"; }
 
-echo "== 1/5 Python =="
+echo "== 1/6 Python =="
 if ! command -v "$PY" >/dev/null 2>&1; then
   fail "python3 não encontrado. Instale um Python 3.10+ antes de seguir."
   exit 1
 fi
 ok "$("$PY" --version 2>&1)"
 
-echo "== 2/5 venv em .venv =="
+echo "== 2/6 venv em .venv =="
 if [ ! -x "$VENV/bin/python" ]; then
   "$PY" -m venv "$VENV" || { fail "não consegui criar o venv em $VENV"; exit 1; }
   ok "venv criado"
@@ -39,7 +39,7 @@ else
 fi
 "$VENV/bin/pip" install -q --disable-pip-version-check --upgrade pip >/dev/null 2>&1
 
-echo "== 3/5 bibliotecas Python =="
+echo "== 3/6 bibliotecas Python =="
 # --upgrade mantém o venv alinhado com os pins do requirements a cada rodada.
 if "$VENV/bin/pip" install -q --disable-pip-version-check --upgrade \
      -r "$REPO_ROOT/scripts/requirements.txt"; then
@@ -49,7 +49,7 @@ else
   echo "         $VENV/bin/pip install -r $REPO_ROOT/scripts/requirements.txt"
 fi
 
-echo "== 4/5 credencial de service account (se vier por env var) =="
+echo "== 4/6 credencial de service account (se vier por env var) =="
 mkdir -p "$CRED_DIR"
 chmod 700 "$CRED_DIR"
 SA_FILE="$CRED_DIR/gcp-service-account.json"
@@ -94,7 +94,45 @@ else
   pend "credenciais do Google Ads incompletas (precisa de DEVELOPER_TOKEN, CLIENT_ID, CLIENT_SECRET e REFRESH_TOKEN)"
 fi
 
-echo "== 5/5 diretórios de trabalho =="
+# ADC no formato authorized_user, para o servidor MCP oficial do Google Ads
+# (ads_mcp chama google.auth.default). Sai das MESMAS três env vars do yaml acima.
+# Gravado também no caminho padrão do gcloud, onde google.auth.default procura
+# sozinho: assim o servidor MCP acha a credencial sem depender de env var ou cwd.
+ADC_FILE="$CRED_DIR/google-ads-adc.json"
+if [ -n "${GOOGLE_ADS_CLIENT_ID:-}" ] && [ -n "${GOOGLE_ADS_CLIENT_SECRET:-}" ] && [ -n "${GOOGLE_ADS_REFRESH_TOKEN:-}" ]; then
+  "$VENV/bin/python" - "$ADC_FILE" <<'PY'
+import json, os, sys
+json.dump({"type": "authorized_user",
+           "client_id": os.environ["GOOGLE_ADS_CLIENT_ID"],
+           "client_secret": os.environ["GOOGLE_ADS_CLIENT_SECRET"],
+           "refresh_token": os.environ["GOOGLE_ADS_REFRESH_TOKEN"]},
+          open(sys.argv[1], "w"))
+PY
+  chmod 600 "$ADC_FILE"
+  mkdir -p "$HOME/.config/gcloud"
+  cp "$ADC_FILE" "$HOME/.config/gcloud/application_default_credentials.json"
+  chmod 600 "$HOME/.config/gcloud/application_default_credentials.json"
+  ok "ADC do Google Ads gravado em .credentials/google-ads-adc.json e em ~/.config/gcloud/"
+else
+  pend "ADC do Google Ads não gerado (faltam CLIENT_ID, CLIENT_SECRET ou REFRESH_TOKEN)"
+fi
+
+echo "== 5/6 servidor MCP oficial do Google Ads (googleads/google-ads-mcp) =="
+if "$VENV/bin/python" -c "import ads_mcp.server" >/dev/null 2>&1; then
+  ok "google-ads-mcp já instalado (versão $("$VENV/bin/pip" show google-ads-mcp 2>/dev/null | awk '/^Version:/{print $2}'))"
+else
+  if "$VENV/bin/pip" install -q --disable-pip-version-check \
+       "google-ads-mcp @ git+https://github.com/googleads/google-ads-mcp.git" >/dev/null 2>&1; then
+    ok "google-ads-mcp instalado a partir do GitHub"
+  else
+    fail "não consegui instalar google-ads-mcp pelo git. Tente à mão:"
+    echo "         $VENV/bin/pip install git+https://github.com/googleads/google-ads-mcp.git"
+  fi
+fi
+echo "           .mcp.json na raiz aponta para .venv/bin/google-ads-mcp."
+echo "           As ferramentas (search, list_accessible_customers) só aparecem em sessão NOVA."
+
+echo "== 6/6 diretórios de trabalho =="
 mkdir -p "$REPO_ROOT/analyses" "$REPO_ROOT/queries/bigquery" \
          "$REPO_ROOT/queries/shopifyql" "$REPO_ROOT/dashboards" \
          "$REPO_ROOT/assets/brand" "$REPO_ROOT/exports"

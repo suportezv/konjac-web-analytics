@@ -114,6 +114,23 @@ else
 fi
 
 echo
+echo "== 2c. Servidor MCP oficial do Google Ads (stdio, .mcp.json) =="
+if [ -n "$PYBIN" ] && [ -x "$VENV/bin/google-ads-mcp" ]; then
+  INIT='{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"validate","version":"0"}}}'
+  if ( printf '%s\n' "$INIT"; sleep 3 ) | timeout 20 "$VENV/bin/google-ads-mcp" 2>/dev/null | grep -q '"serverInfo"'; then
+    ok "google-ads-mcp sobe em stdio e responde ao handshake MCP"
+  else
+    fail "google-ads-mcp está instalado mas não respondeu ao handshake"
+  fi
+  if [ -f "$CRED_DIR/google-ads-adc.json" ]; then ok "ADC em .credentials/google-ads-adc.json"; else pend "ADC ausente (setup.sh gera a partir de CLIENT_ID, CLIENT_SECRET e REFRESH_TOKEN)"; fi
+  if [ -f "$REPO_ROOT/.mcp.json" ]; then ok ".mcp.json presente na raiz"; else fail ".mcp.json ausente na raiz"; fi
+  echo "           handshake OK não é acesso OK: a credencial só é lida na primeira chamada de ferramenta,"
+  echo "           e as ferramentas só aparecem numa sessão NOVA. A prova de acesso é o item 6."
+else
+  pend "google-ads-mcp não instalado (rode setup.sh)"
+fi
+
+echo
 echo "== 3. Rede: cada fonte de dados responde? =="
 net_check bigquery.googleapis.com       "BigQuery API"
 net_check analyticsdata.googleapis.com  "GA4 Data API"

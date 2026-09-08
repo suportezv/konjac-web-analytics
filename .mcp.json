@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "google-ads": {
+      "command": ".venv/bin/google-ads-mcp",
+      "args": [],
+      "env": {
+        "GOOGLE_ADS_DEVELOPER_TOKEN": "${GOOGLE_ADS_DEVELOPER_TOKEN}",
+        "GOOGLE_ADS_LOGIN_CUSTOMER_ID": "${GOOGLE_ADS_LOGIN_CUSTOMER_ID}"
+      }
+    }
+  }
+}

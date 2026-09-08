@@ -258,14 +258,30 @@ siga; se algum deixar de valer, corrija aqui e commite.
 - **Sem conector oficial no diretório do claude.ai** (conferido 2026-09-08). O que
   existe lá: conector **Google Cloud BigQuery** (`execute_sql`, `list_dataset_ids`)
   e agregadores pagos (Supermetrics, Windsor.ai, Polar Analytics).
-- Três caminhos, decididos pelo developer token do MCC da agência: **A** API direta
-  (precisa de token com acesso básico, app OAuth Desktop, refresh token gerado por
-  `scripts/gerar_refresh_token_google_ads.py` na máquina de alguém, seis env vars e
-  rede liberada); **B** transferência Google Ads para BigQuery (sem developer token,
-  D-1, cobre GA4 no mesmo projeto, acesso pelo conector BigQuery sem mexer na rede);
-  **C** agregador pago. Passo a passo em `analyses/2026-09-08-conectar-google-ads/`.
+- **Existe um servidor MCP oficial do Google**, `googleads/google-ads-mcp` (Python,
+  FastMCP). Ferramentas: `search` (GAQL), `get_resource_metadata`,
+  `list_accessible_customers`. Autentica por **ADC** com escopo `adwords`; developer
+  token em `GOOGLE_ADS_DEVELOPER_TOKEN`; MCC em `GOOGLE_ADS_LOGIN_CUSTOMER_ID`.
+  **O repo já está preparado para ele**: `.mcp.json` na raiz (stdio, segredos por
+  `${VAR}`), `setup.sh` instala o pacote e grava o ADC `authorized_user` a partir das
+  mesmas três env vars do `google-ads.yaml`, `validate.sh` item 2c prova o handshake.
+  Instalado e testado até o handshake em 2026-09-08 (fastmcp 4.0.3, mcp 2.2.0).
+- **Nível mínimo do developer token é Explorer**, não Básico, segundo o README
+  oficial do servidor. Tokens novos podem subir para Explorer sozinhos.
+- Caminhos, decididos pelo developer token do MCC: **A-MCP Modo 1** (stdio neste
+  container, pronto, precisa das seis env vars `GOOGLE_ADS_*` mais rede liberada e
+  sessão nova); **A-MCP Modo 2** (Cloud Run com OAuth, ligado como conector
+  customizado no claude.ai, para o time); **A** API direta pelas bibliotecas
+  (mesmas credenciais); **B** transferência para o BigQuery (sem developer token,
+  D-1, cobre GA4); **C** agregador pago. Passo a passo em
+  `analyses/2026-09-08-conectar-google-ads/`.
 - **O script de refresh token roda fora do container**: precisa de navegador e o
   container não alcança `accounts.google.com`.
+- Gotchas do servidor MCP: (1) **handshake OK não é acesso OK**, a credencial só é
+  lida na primeira chamada de ferramenta; (2) ferramentas de `.mcp.json` **só
+  aparecem em sessão nova**; (3) ele chama `pypi.org` ao subir (checagem de versão do
+  FastMCP), o que só funciona porque `pypi.org` está no `NO_PROXY`; (4) resolve
+  `tools_config.yaml` a partir do diretório de trabalho, o padrão embutido basta.
 
 ### Fuso e datas
 
@@ -298,6 +314,8 @@ scripts/validate.sh          valida item a item, com chamada real a cada fonte
 scripts/requirements.txt     dependências Python fixadas
 scripts/run_bq_query.py      roda queries/bigquery/*.sql resolvendo ${VAR} por env var
 scripts/gerar_refresh_token_google_ads.py   fluxo OAuth do Google Ads, roda na máquina local
+.mcp.json                    servidor MCP oficial do Google Ads (stdio), segredos por ${VAR}
+queries/gaql/                GAQL reutilizável, roda pela ferramenta search do MCP
 queries/bigquery/            SQL reutilizável
 queries/shopifyql/           ShopifyQL reutilizável
 analyses/<AAAA-MM-DD>-<assunto>/   uma pasta por análise entregue
