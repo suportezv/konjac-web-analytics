@@ -19,6 +19,13 @@ VENV="$REPO_ROOT/.venv"
 PYBIN="$VENV/bin/python"
 CRED_DIR="$REPO_ROOT/.credentials"
 FAILED=0
+# Verificado em 2026-09-08: o proxy do ambiente cloud não atende gRPC / HTTP/2, e o
+# cliente google-ads é gRPC sem REST. Dentro do cloud, o item 6 do Google Ads e o
+# servidor MCP oficial nunca vão passar; o teste só prova acesso fora do cloud.
+CLOUD_GRPC_BLOCK=0
+if [ -f /root/.ccr/README.md ] && grep -q "gRPC / HTTP/2-only APIs" /root/.ccr/README.md 2>/dev/null; then
+  CLOUD_GRPC_BLOCK=1
+fi
 
 ok()   { printf '  OK       %s\n' "$1"; }
 pend() { printf '  PENDENTE %s\n' "$1"; }
@@ -133,6 +140,9 @@ if [ -n "$PYBIN" ] && [ -x "$VENV/bin/google-ads-mcp" ]; then
   fi
   echo "           handshake OK não é acesso OK: a credencial só é lida na primeira chamada de ferramenta,"
   echo "           e as ferramentas só aparecem numa sessão NOVA. A prova de acesso é o item 6."
+  if [ "$CLOUD_GRPC_BLOCK" = 1 ]; then
+    pend "este container é o cloud: gRPC não passa pelo proxy, o servidor oficial só funciona FORA daqui (Claude Code local ou Cloud Run)"
+  fi
 else
   pend "google-ads-mcp não instalado (rode setup.sh)"
 fi
@@ -239,7 +249,9 @@ else
 fi
 
 # --- Google Ads: lista contas acessíveis ---
-if [ -n "$PYBIN" ] && [ -f "$CRED_DIR/google-ads.yaml" ]; then
+if [ "$CLOUD_GRPC_BLOCK" = 1 ]; then
+  pend "Google Ads não testável neste container: a biblioteca é gRPC e o proxy do cloud não atende gRPC (ver CLAUDE.md). Só prova acesso fora do cloud."
+elif [ -n "$PYBIN" ] && [ -f "$CRED_DIR/google-ads.yaml" ]; then
   "$PYBIN" - "$CRED_DIR/google-ads.yaml" <<'PY'
 import sys
 try:

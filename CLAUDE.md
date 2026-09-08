@@ -25,7 +25,7 @@ existe para o resto da equipe.
 |---|---|---|
 | Shopify (konjacmassamf.com.br) | Conector MCP `Shopify` (oficial) ou Admin API por env var | Conector oficial com **token expirado**; reautorizar. **O conector Elos Link não deve ser usado** (decisão do usuário, 2026-09-08). Loja confirmada. |
 | GA4 | Service account + `google-analytics-data` | **Sem conector MCP.** Sem credencial e sem rota de rede. |
-| Google Ads | OAuth2 refresh token + `google-ads`, ou BigQuery Data Transfer | **Sem conexão por nenhum caminho** (rechecado 2026-09-08). O diretório do claude.ai **não tem conector oficial**. Guia em `analyses/2026-09-08-conectar-google-ads/`. |
+| Google Ads | Servidor MCP oficial fora do container (Cloud Run como conector, ou Claude Code local), shim REST, ou BigQuery Data Transfer | **Sem conexão** (2026-09-08). **gRPC não passa pelo proxy do cloud**, então a biblioteca `google-ads` e o servidor MCP oficial **não funcionam dentro deste container**. Guia em `analyses/2026-09-08-conectar-google-ads/`. |
 | Meta Ads | Conector MCP `Meta Ads MCP` | **OPERACIONAL desde 2026-08-31.** Autorizado e habilitado no chat. Leitura completa de campanha, conjunto e anúncio. |
 | BigQuery | Service account + `google-cloud-bigquery` | **Sem conector MCP.** Sem credencial e sem rota de rede. |
 
@@ -146,6 +146,12 @@ só vale para sessões novas**, então crie o environment e abra outra sessão.
    `graph.facebook.com`, `konjacmassamf.com.br` e o domínio `.myshopify.com` da loja.
 2. **Environment variables**: as da tabela acima.
 3. **Setup script**: `bash scripts/setup.sh`.
+4. **"Adicionar credencial"** é outro recurso, não é variável de ambiente: o proxy
+   injeta o segredo como cabeçalho HTTP nas requisições aos sites permitidos, e o
+   segredo nunca entra no container. Serve para token estático em API REST
+   (fallback da Meta em `graph.facebook.com` com `Authorization: Bearer`; Admin API
+   da Shopify com cabeçalho `X-Shopify-Access-Token`). **Não serve** para OAuth de
+   curta duração nem para gRPC. As `GOOGLE_ADS_*` vão em Environment variables.
 
 ---
 
@@ -250,6 +256,16 @@ siga; se algum deixar de valer, corrija aqui e commite.
 
 ### Google Ads: como conectar
 
+- **BLOQUEIO DE ARQUITETURA (2026-09-08): gRPC / HTTP/2 não passa pelo proxy do
+  ambiente cloud.** Está em `/root/.ccr/README.md`, "Not supported through the
+  proxy (report, do not work around)". O cliente `google-ads` é **gRPC sem
+  transporte REST** (conferido: `GoogleAdsService` só tem `grpc.py`). Consequência:
+  o servidor MCP oficial e o item 6 do `validate.sh` **nunca vão funcionar dentro
+  deste container**, com ou sem rede liberada. Não gaste tempo liberando
+  `googleads.googleapis.com` para eles. O que funciona: servidor **fora** do
+  container (Cloud Run como conector do claude.ai, ou Claude Code **local** com o
+  mesmo `.mcp.json`), ou um **shim REST** próprio (a API REST do Google Ads é
+  HTTP/1.1 e passa pelo proxy).
 - **Sem conector oficial no diretório do claude.ai** (conferido 2026-09-08). O que
   existe lá: conector **Google Cloud BigQuery** (`execute_sql`, `list_dataset_ids`)
   e agregadores pagos (Supermetrics, Windsor.ai, Polar Analytics).
@@ -266,12 +282,11 @@ siga; se algum deixar de valer, corrija aqui e commite.
   real atravessou até o erro esperado sem ADC (fastmcp 4.0.3, mcp 2.2.0).
 - **Nível mínimo do developer token é Explorer**, não Básico, segundo o README
   oficial do servidor. Tokens novos podem subir para Explorer sozinhos.
-- Caminhos, decididos pelo developer token do MCC: **A-MCP Modo 1** (stdio neste
-  container, pronto, precisa das seis env vars `GOOGLE_ADS_*` mais rede liberada e
-  sessão nova); **A-MCP Modo 2** (Cloud Run com OAuth, ligado como conector
-  customizado no claude.ai, para o time); **A** API direta pelas bibliotecas
-  (mesmas credenciais); **B** transferência para o BigQuery (sem developer token,
-  D-1, cobre GA4); **C** agregador pago. Passo a passo em
+- Caminhos, todos com as mesmas seis env vars `GOOGLE_ADS_*`: **Modo 2** (Cloud Run
+  com OAuth, conector customizado no claude.ai, para o time; é o destino); **Modo 1**
+  (`.mcp.json` do repo no **Claude Code local**, não no cloud); **Modo 1b** (shim
+  REST no repo, roda no cloud, código nosso); **B** transferência para o BigQuery
+  (sem developer token, D-1, cobre GA4); **C** agregador pago. Passo a passo em
   `analyses/2026-09-08-conectar-google-ads/`.
 - **O script de refresh token roda fora do container**: precisa de navegador e o
   container não alcança `accounts.google.com`.

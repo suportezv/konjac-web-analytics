@@ -39,7 +39,11 @@ Formato de cada entrada:
   `queries/gaql/` para o diagnóstico do PMax, e
   `scripts/gerar_refresh_token_google_ads.py`. O servidor subiu sozinho no Claude
   Code web quando o container reiniciou e uma chamada real atravessou até o erro
-  esperado sem credencial: mecanismo provado, falta só credencial e rede. `CLAUDE.md` ganha a loja confirmada,
+  esperado sem credencial. **Depois disso, bloqueio:** o proxy do cloud não atende
+  gRPC / HTTP/2 e a biblioteca `google-ads` é gRPC sem REST, então o servidor
+  oficial não funciona dentro deste container. Os caminhos que funcionam ficaram no
+  guia: Cloud Run como conector do claude.ai (destino), Claude Code local com o
+  mesmo `.mcp.json`, ou um shim REST próprio. `CLAUDE.md` ganha a loja confirmada,
   a seção do conector Elos Link com o aviso sobre ferramentas de escrita, a higiene
   de UTM e os caminhos de conexão do Google Ads.
 

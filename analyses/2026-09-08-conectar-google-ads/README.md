@@ -183,7 +183,20 @@ que as consultas passam a ser ferramentas na sessão, como o Meta Ads MCP hoje.
 
 Há dois modos de ligar, e o repo já está preparado para o primeiro.
 
-#### Modo 1: dentro do Claude Code na web, pelo `.mcp.json` do repo (pronto)
+> **BLOQUEIO DESCOBERTO EM 2026-09-08, depois de o servidor subir na sessão.** O
+> proxy de saída do ambiente cloud documenta, em `/root/.ccr/README.md`, seção
+> "Not supported through the proxy (report, do not work around)": **gRPC / HTTP/2-only
+> APIs**. O cliente oficial do Google Ads (`google-ads`, usado pelo servidor MCP) é
+> **gRPC, sem transporte REST** (conferido na biblioteca instalada: `GoogleAdsService`
+> só tem `grpc.py` e `grpc_asyncio.py`). Logo, **o servidor MCP oficial rodando dentro
+> deste container não alcança o Google Ads nem com a rede liberada.** O mesmo vale para
+> o item 6 do `validate.sh` (biblioteca Python) e para qualquer coisa gRPC no cloud.
+> O Modo 1 abaixo continua válido **no Claude Code local** (CLI ou desktop na máquina
+> de alguém, sem esse proxy), e a preparação do repo serve para ele. Para a sessão web,
+> os caminhos que funcionam são o **Modo 2** (servidor fora do container) e um
+> **shim REST** (seção nova, mais abaixo).
+
+#### Modo 1: pelo `.mcp.json` do repo (pronto; funciona no Claude Code LOCAL, não no cloud)
 
 O que já está commitado:
 
@@ -210,6 +223,37 @@ O que falta, e é só isto:
 
 Ponto de atenção: o servidor faz uma chamada a `pypi.org` ao subir (checagem de
 versão do FastMCP). Funciona aqui porque `pypi.org` está no `NO_PROXY`.
+
+#### O diálogo "Adicionar credencial" do environment
+
+É outra coisa, não é o lugar das variáveis. Esse diálogo cria uma credencial que o
+**proxy injeta como cabeçalho HTTP** em toda requisição que o Claude fizer aos
+"Sites permitidos": o segredo **nunca entra no container**, o código só faz a
+chamada sem o cabeçalho e o proxy completa. Serve para API REST com token estático
+(tipo Bearer ou cabeçalho customizado). **Não serve** para o caminho do Google Ads
+via servidor oficial: o token OAuth de acesso expira em uma hora e é renovado pela
+própria biblioteca, o developer token precisa existir dentro do processo, e o tráfego
+é gRPC, que o proxy não atende. As seis variáveis `GOOGLE_ADS_*` vão na seção
+**Environment variables** (variáveis de ambiente) da mesma página do environment.
+
+Onde esse diálogo é perfeito: os **fallbacks estáticos** da célula. Token de System
+User da Meta (`Authorization: Bearer`, site `graph.facebook.com`) e token da Admin
+API da Shopify (cabeçalho `X-Shopify-Access-Token`, prefixo vazio, site
+`konjac-massas-mf.myshopify.com`). Com ele, esses dois segredos saem do contrato de
+env vars e nunca pisam no container. Fica como melhoria do `CLAUDE.md`.
+
+#### Modo 1b: um shim REST no repo (funciona no cloud; é código nosso)
+
+O Google Ads tem interface **REST** (`POST
+https://googleads.googleapis.com/v25/customers/{id}/googleAds:search`, JSON, mesmo
+GAQL, cabeçalhos `Authorization: Bearer`, `developer-token` e `login-customer-id`),
+e a renovação do token OAuth é uma chamada HTTP/1.1 a `oauth2.googleapis.com`. As
+duas passam pelo proxy assim que os dois hosts forem liberados. Um servidor MCP
+pequeno, nosso, em Python, expondo `search` em GAQL e `list_accessible_customers`
+por REST, resolve a sessão web sem infraestrutura nova. Custo: é código da célula
+para manter, e só pode ser testado contra a API real quando houver credencial e
+rede. As mesmas seis variáveis servem. **Endpoint e cabeçalhos acima são
+conhecimento prévio, a confirmar na documentação pública quando houver rede.**
 
 #### Modo 2: hospedado no Cloud Run, ligado como conector no claude.ai (para o time)
 
@@ -277,11 +321,20 @@ com o esquema de dados dele. É a saída se ninguém puder mexer em Cloud e em t
 
 ### Recomendação
 
-**Passo 0 hoje.** Com token em Explorer ou acima: **A-MCP Modo 1** agora, porque o
-repo já está pronto e são as mesmas credenciais do caminho A; ele responde a
-pergunta do PMax na primeira sessão nova. Depois, **A-MCP Modo 2** para o time e
-**B** para o histórico consolidado com GA4. Sem token: pedir o acesso hoje e fazer
-**B** enquanto espera. **C** só se a decisão for zero engenharia.
+**Passo 0 hoje.** Depois do bloqueio do gRPC, a escolha é entre três caminhos que
+funcionam de verdade, todos com as mesmas credenciais:
+
+| Caminho | Onde roda | Esforço de quem | Pronto quando | Serve para |
+|---|---|---|---|---|
+| **Modo 2** Cloud Run + conector no claude.ai | fora do container | Cloud da agência (deploy, Firestore, app OAuth Web) | dias | o time inteiro, qualquer sessão |
+| **Modo 1b** shim REST no repo | dentro do container | a célula (código) | horas, mais a validação com rede | sessões web desta célula |
+| **Modo 1** `.mcp.json` no Claude Code local | máquina de alguém | zero além das env vars | minutos | um analista, hoje |
+
+Recomendação: **Modo 2 como destino** (é o que o "vincular" pede e é igual ao Meta
+Ads MCP), e, para responder o PMax esta semana sem esperar o deploy, **Modo 1 local**
+se alguém tiver o Claude Code na máquina, ou **Modo 1b** se a resposta tiver que sair
+da sessão web. **B** continua valendo para o histórico consolidado com GA4, e **C**
+só se a decisão for zero engenharia.
 
 ---
 
