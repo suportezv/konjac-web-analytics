@@ -25,8 +25,9 @@ o server side que saiu do ar.
 
 ## Método
 
-- **Fontes:** Elos Link (`shopify_admin_query` e `origem_das_vendas`, janelas 7, 30
-  e 90 dias até 2026-09-08). Diretório de conectores do claude.ai
+- **Fontes:** conector Elos Link (`shopify_admin_query` e `origem_das_vendas`,
+  janelas 7, 30 e 90 dias até 2026-09-08). **Coleta pontual, feita antes da decisão
+  de não usar esse conector; não repetir por ele.** Diretório de conectores do claude.ai
   (`SearchMcpRegistry`). Ambiente do container (env vars e proxy).
 - **Loja confirmada antes de qualquer número:** `Konjac Massa®`,
   `konjac-massas-mf.myshopify.com`, domínio `konjacmassamf.com.br`, fuso
@@ -253,12 +254,6 @@ Para diagnóstico de "por que caiu" isso serve; para acompanhar o dia, não.
 O diretório tem **Supermetrics** e **Windsor.ai**, que ligam Google Ads, Meta, GA4 e
 Shopify por OAuth, sem engenharia. Custa assinatura e coloca um fornecedor no meio,
 com o esquema de dados dele. É a saída se ninguém puder mexer em Cloud e em token.
-
-### Caminho D: perguntar à Elos Link
-
-As instruções do conector deles mencionam uma função `connect_google_ads` que não
-está exposta aqui. Se eles puderem entregar o custo por campanha do Google pelo mesmo
-conector, fecha com a atribuição da Shopify que já vem por ali. Vale uma pergunta.
 
 ### Recomendação
 
