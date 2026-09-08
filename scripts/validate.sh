@@ -124,6 +124,13 @@ if [ -n "$PYBIN" ] && [ -x "$VENV/bin/google-ads-mcp" ]; then
   fi
   if [ -f "$CRED_DIR/google-ads-adc.json" ]; then ok "ADC em .credentials/google-ads-adc.json"; else pend "ADC ausente (setup.sh gera a partir de CLIENT_ID, CLIENT_SECRET e REFRESH_TOKEN)"; fi
   if [ -f "$REPO_ROOT/.mcp.json" ]; then ok ".mcp.json presente na raiz"; else fail ".mcp.json ausente na raiz"; fi
+  # Verificado em 2026-09-08: variável indefinida em ${VAR} vira a string literal no
+  # processo do servidor. Como ele herda o ambiente da sessão, o bloco env é dispensável.
+  if grep -q '\${' "$REPO_ROOT/.mcp.json" 2>/dev/null; then
+    fail ".mcp.json usa \${VAR}: indefinida vira string literal no processo. Remova o bloco env, o servidor herda o ambiente."
+  else
+    ok ".mcp.json sem \${VAR}: segredos chegam ao servidor por herança do ambiente"
+  fi
   echo "           handshake OK não é acesso OK: a credencial só é lida na primeira chamada de ferramenta,"
   echo "           e as ferramentas só aparecem numa sessão NOVA. A prova de acesso é o item 6."
 else

@@ -101,6 +101,24 @@ configurações > Configuração > **Central de API**. Lá aparece o developer t
   revisa em alguns dias úteis) **e** começar o caminho B em paralelo, que não depende
   de token.
 
+**O que a Central de API da Zavi mostra (print de 2026-09-08):** existe developer
+token no MCC, e o nível de acesso aparece como **"Acesso às Análises"**, com o link
+"Solicitar acesso básico" logo abaixo. Pela posição na escala (acima de Conta de
+teste, abaixo de Básico) e pelo texto, é o nível **Explorer**, que o README oficial
+do servidor MCP diz bastar para consultar conta de produção, com cota diária
+limitada. **Clicar em "Solicitar acesso básico" é opcional e assíncrono**: vale
+pedir, não vale esperar. A prova final é empírica, na primeira chamada de
+`list_accessible_customers` depois de configurado: se voltar "developer token is
+only approved for use with test accounts", o nível é de teste e o Básico passa a ser
+obrigatório; se voltar a lista de contas, está resolvido.
+
+**Cuidado com o print:** ele mostra o token inteiro, e o token é credencial. Ele vai
+para a variável `GOOGLE_ADS_DEVELOPER_TOKEN` no environment e para lugar nenhum mais.
+Sozinho, o developer token não lê dado de conta (exige também credencial OAuth de um
+usuário com acesso), então o risco é limitado. "Redefinir token" invalida o token em
+**toda** integração do MCC que o use; só faça isso depois de conferir o que mais
+depende dele.
+
 ### Caminho A: Google Ads API direta (o que o repo já está preparado para usar)
 
 É o caminho documentado no `CLAUDE.md`, com `scripts/setup.sh` e
@@ -169,8 +187,10 @@ Há dois modos de ligar, e o repo já está preparado para o primeiro.
 
 O que já está commitado:
 
-- `.mcp.json` na raiz apontando para `.venv/bin/google-ads-mcp`, com o developer
-  token e o MCC vindos do environment por `${VAR}` (nada de segredo no arquivo).
+- `.mcp.json` na raiz apontando para `.venv/bin/google-ads-mcp`, **sem bloco `env`**:
+  o processo do servidor herda o ambiente da sessão inteiro (verificado), então as
+  variáveis do painel de environment chegam a ele sozinhas, e nada de segredo passa
+  pelo arquivo.
 - `scripts/setup.sh` instala o servidor no venv e, a partir de `GOOGLE_ADS_CLIENT_ID`,
   `CLIENT_SECRET` e `REFRESH_TOKEN`, grava a credencial no formato que o servidor lê
   (`authorized_user`), no caminho padrão onde `google.auth.default` procura.
@@ -185,7 +205,7 @@ O que falta, e é só isto:
 | 2 | App OAuth **tipo Desktop** no Google Cloud, com a Google Ads API ativada no projeto | quem tem o Cloud |
 | 3 | Refresh token, rodando **na própria máquina** `python scripts/gerar_refresh_token_google_ads.py --client-id ... --client-secret ...` (ou `gcloud auth application-default login --scopes=https://www.googleapis.com/auth/adwords --client-id-file=<json do app>`) | quem tem acesso à conta da Konjac |
 | 4 | Environment do Claude Code: as seis variáveis `GOOGLE_ADS_*` (tabela do caminho A) e rede Custom com `googleads.googleapis.com`, `oauth2.googleapis.com`, `accounts.google.com` | você |
-| 5 | **Sessão nova.** Ao abrir, o Claude Code pede para aprovar o servidor do `.mcp.json`; aprovar. As ferramentas `search` e `list_accessible_customers` aparecem. | você |
+| 5 | **Sessão nova.** O servidor do `.mcp.json` sobe sozinho com o container (aconteceu nesta sessão); se aparecer pedido de aprovação do servidor do projeto, aprovar. As ferramentas `search`, `get_resource_metadata` e `list_accessible_customers` aparecem. | você |
 | 6 | `bash scripts/validate.sh`: itens 2c e 6 têm que dar OK | eu, na sessão nova |
 
 Ponto de atenção: o servidor faz uma chamada a `pypi.org` ao subir (checagem de
@@ -284,11 +304,17 @@ pergunta do PMax na primeira sessão nova. Depois, **A-MCP Modo 2** para o time 
 
 ## Limitação
 
-- **O `.mcp.json` foi testado até o handshake, não até a ferramenta.** Sem
-  credencial e sem rede não dá para ir além. Duas coisas ficam para a sessão nova:
-  se o Claude Code na web carrega servidor de projeto do `.mcp.json` sem ajuste, e
-  se o processo sobe com o repo como diretório de trabalho (o caminho
-  `.venv/bin/google-ads-mcp` é relativo a isso).
+- **Confirmado nesta sessão, depois de o container reiniciar:** o Claude Code na
+  web **carrega o servidor do `.mcp.json`** sem ajuste (processo
+  `.venv/bin/google-ads-mcp` vivo, três ferramentas na sessão), o processo roda com
+  **o repo como diretório de trabalho** (caminho relativo funciona), **herda o
+  ambiente da sessão** (proxy, CA, `PATH`, `HOME`), e uma chamada real de
+  `list_accessible_customers` atravessou tudo e voltou com o erro esperado sem ADC:
+  `Your default credentials were not found`. Dois gotchas saíram daí: variável
+  indefinida em `${VAR}` vira a **string literal** no processo (por isso o bloco `env`
+  foi removido), e o cliente do Google Ads fala gRPC, que só confia no CA do proxy
+  via `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH`, **que o ambiente já define**. O que resta
+  sem teste é só o que exige credencial e rede: a chamada autenticada em si.
 - **Não há número de Google Ads nesta análise.** Nada de custo, clique, impressão,
   CVR ou ROAS do Google. Tudo sobre o PMax aqui é o que a Shopify atribui por último
   clique, e último clique subestima campanhas de topo como o PMax.

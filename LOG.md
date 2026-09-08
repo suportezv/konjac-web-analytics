@@ -37,7 +37,9 @@ Formato de cada entrada:
   container e Cloud Run como conector do claude.ai), `.mcp.json` na raiz, `setup.sh`
   instalando o servidor e gravando o ADC, `validate.sh` item 2c, três consultas em
   `queries/gaql/` para o diagnóstico do PMax, e
-  `scripts/gerar_refresh_token_google_ads.py`. `CLAUDE.md` ganha a loja confirmada,
+  `scripts/gerar_refresh_token_google_ads.py`. O servidor subiu sozinho no Claude
+  Code web quando o container reiniciou e uma chamada real atravessou até o erro
+  esperado sem credencial: mecanismo provado, falta só credencial e rede. `CLAUDE.md` ganha a loja confirmada,
   a seção do conector Elos Link com o aviso sobre ferramentas de escrita, a higiene
   de UTM e os caminhos de conexão do Google Ads.
 

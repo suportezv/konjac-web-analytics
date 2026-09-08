@@ -257,10 +257,13 @@ siga; se algum deixar de valer, corrija aqui e commite.
   FastMCP). Ferramentas: `search` (GAQL), `get_resource_metadata`,
   `list_accessible_customers`. Autentica por **ADC** com escopo `adwords`; developer
   token em `GOOGLE_ADS_DEVELOPER_TOKEN`; MCC em `GOOGLE_ADS_LOGIN_CUSTOMER_ID`.
-  **O repo já está preparado para ele**: `.mcp.json` na raiz (stdio, segredos por
-  `${VAR}`), `setup.sh` instala o pacote e grava o ADC `authorized_user` a partir das
-  mesmas três env vars do `google-ads.yaml`, `validate.sh` item 2c prova o handshake.
-  Instalado e testado até o handshake em 2026-09-08 (fastmcp 4.0.3, mcp 2.2.0).
+  **O repo já está preparado para ele**: `.mcp.json` na raiz (stdio, **sem bloco
+  `env`**: o servidor herda o ambiente da sessão), `setup.sh` instala o pacote e
+  grava o ADC `authorized_user` a partir das mesmas três env vars do
+  `google-ads.yaml`, `validate.sh` item 2c prova o handshake e barra `${VAR}` no
+  `.mcp.json`. Em 2026-09-08 o servidor **subiu sozinho no Claude Code web** depois
+  de o container reiniciar, as três ferramentas apareceram na sessão e uma chamada
+  real atravessou até o erro esperado sem ADC (fastmcp 4.0.3, mcp 2.2.0).
 - **Nível mínimo do developer token é Explorer**, não Básico, segundo o README
   oficial do servidor. Tokens novos podem subir para Explorer sozinhos.
 - Caminhos, decididos pelo developer token do MCC: **A-MCP Modo 1** (stdio neste
@@ -274,9 +277,21 @@ siga; se algum deixar de valer, corrija aqui e commite.
   container não alcança `accounts.google.com`.
 - Gotchas do servidor MCP: (1) **handshake OK não é acesso OK**, a credencial só é
   lida na primeira chamada de ferramenta; (2) ferramentas de `.mcp.json` **só
-  aparecem em sessão nova**; (3) ele chama `pypi.org` ao subir (checagem de versão do
-  FastMCP), o que só funciona porque `pypi.org` está no `NO_PROXY`; (4) resolve
-  `tools_config.yaml` a partir do diretório de trabalho, o padrão embutido basta.
+  aparecem em sessão nova** (ou quando o container reinicia); (3) ele chama
+  `pypi.org` ao subir (checagem de versão do FastMCP), o que só funciona porque
+  `pypi.org` está no `NO_PROXY`; (4) resolve `tools_config.yaml` a partir do
+  diretório de trabalho, o padrão embutido basta; (5) **`${VAR}` com variável
+  indefinida vira string literal** no processo, então não use bloco `env` para
+  segredo: o processo **herda o ambiente da sessão** (verificado em `/proc`), basta
+  a variável existir no painel de environment; (6) o cliente do Google Ads fala
+  **gRPC**, que ignora `REQUESTS_CA_BUNDLE` e só confia no CA do proxy por
+  `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH`, **já definida pelo ambiente**; não redefina;
+  (7) sem ADC o erro é `Your default credentials were not found`, e ele vem
+  **antes** de qualquer checagem do developer token.
+- **Developer token da Zavi**: existe no MCC, nível **"Acesso às Análises"** na
+  Central de API em 2026-09-08 (pela escala, é o Explorer). Nunca no chat nem no
+  repo. Prova do nível na primeira `list_accessible_customers`: erro "only approved
+  for use with test accounts" significa que o Básico virou obrigatório.
 
 ### Fuso e datas
 
@@ -309,7 +324,7 @@ scripts/validate.sh          valida item a item, com chamada real a cada fonte
 scripts/requirements.txt     dependências Python fixadas
 scripts/run_bq_query.py      roda queries/bigquery/*.sql resolvendo ${VAR} por env var
 scripts/gerar_refresh_token_google_ads.py   fluxo OAuth do Google Ads, roda na máquina local
-.mcp.json                    servidor MCP oficial do Google Ads (stdio), segredos por ${VAR}
+.mcp.json                    servidor MCP oficial do Google Ads (stdio); sem bloco env, herda o ambiente
 queries/gaql/                GAQL reutilizável, roda pela ferramenta search do MCP
 queries/bigquery/            SQL reutilizável
 queries/shopifyql/           ShopifyQL reutilizável
